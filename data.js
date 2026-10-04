@@ -15,7 +15,7 @@ window.TR_DATA = {
      world: the environment the frames float in — booth · ocean · glass · flame · stars · garden · neon */
   films: [
     {
-      id: "anamne", title: "Anamne Booth", project: "Contingency", year: "2026", status: "new cut",
+      id: "anamne", title: "Anamne Booth", project: "Contingency", year: "2026", status: "finished",
       kind: "magical-realist memory drama · ~5 min", label: "memory drama", world: "booth",
       drive: "1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ", frames: 14,
       logline: "On the day she finally keeps a promise, a young woman steps into a photo booth that remembers more than she does — and the person beside her may never have truly been there.",

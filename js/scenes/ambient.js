@@ -17,7 +17,7 @@ export function create(ctx, { name }) {
   moon.position.set(38, 16, -90); scene.add(moon);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: 0x84d2f6, transparent: true, opacity: 0.4, depthWrite: false, fog: false }));
   halo.scale.set(40, 40, 1); halo.position.copy(moon.position); scene.add(halo);
-  const glints = motes(small ? 80 : 160, [-20, 0.3, -40, 20, 8, 4], { size: 0.12, color: lab ? 0x6fd3b8 : 0x91e5f6, opacity: 0.7 });
+  const glints = motes(small ? 80 : 160, [-20, 0.3, -40, 20, 8, 4], { size: 0.05, color: lab ? 0x6fd3b8 : 0x91e5f6, opacity: 0.6 });
   scene.add(glints.points);
   return {
     scene, camera, hotspots: [], pickables: [], ready: Promise.resolve(),

@@ -12,15 +12,15 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2302060b'/%3E%3Cellipse cx='16' cy='16' rx='11' ry='6.5' fill='none' stroke='%2384D2F6' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2359A5D8'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%2302060b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Special+Elite&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/intro/eyes.webp" media="(min-aspect-ratio: 1/1)">
 <link rel="preload" as="image" href="assets/intro/eyes-portrait.webp" media="(max-aspect-ratio: 1/1)">
-<link rel="stylesheet" href="style.css?v=23">
+<link rel="stylesheet" href="style.css?v=30">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-  "tr/shaders": "./js/shaders.js?v=23"
+  "tr/shaders": "./js/shaders.js?v=30"
 } }
 </script>
 </head>
@@ -34,12 +34,12 @@
   <div class="eyes" id="eyes"><img src="assets/intro/eyes.webp" alt="" class="eyes-img eyes-wide"><img src="assets/intro/eyes-portrait.webp" alt="" class="eyes-img eyes-tall"></div>
   <div class="eyes-light" aria-hidden="true"></div>
   <div class="intro-copy">
-    <p class="intro-kicker"><span class="dot"></span>TANISHA PARHI</p>
+    <p class="intro-kicker"><span class="dot"></span>Tanisha Parhi — portfolio</p>
     <h1 class="intro-title">TanRain</h1>
-    <p class="intro-sub">writer, building films with machines.<br>look closer.</p>
+    <p class="intro-sub">Writer, building films with machines.<br>Look closer.</p>
   </div>
-  <button class="intro-go" id="dive" type="button"><span>dive in</span><i aria-hidden="true">↓</i></button>
-  <p class="intro-hint">scroll, tap, or press any key</p>
+  <button class="intro-go btn btn-primary btn-lg" id="dive" type="button" data-magnetic><span class="btn-label">Dive in</span><span class="btn-disc" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span></button>
+  <p class="intro-hint">Scroll, tap, or press any key</p>
   <div class="intro-load" aria-live="polite"><i></i></div>
 </section>
 
@@ -48,10 +48,10 @@
 <div id="labels" aria-hidden="false"></div>
 
 <header id="hud">
-  <a class="brand" href="#room" data-route="room"><span class="dot"></span><span class="brand-name">TANISHA PARHI</span><span class="brand-sub">tanrain</span></a>
+  <a class="brand" href="#room" data-route="room"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Tanisha Parhi</span><span class="brand-sub">TanRain</span></a>
   <div class="hud-right">
-    <a class="pill glass" href="mailto:rainaparhi@gmail.com">WORK WITH ME ↗</a>
-    <button class="icon-btn glass" id="sound-btn" type="button" aria-pressed="false" aria-label="Sound">
+    <a class="pill btn btn-ghost btn-sm" href="mailto:rainaparhi@gmail.com" data-magnetic><span class="status-dot" aria-hidden="true"></span><span class="btn-label">Work with me</span></a>
+    <button class="icon-btn btn-icon" id="sound-btn" type="button" aria-pressed="false" aria-label="Sound" data-magnetic>
       <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none"/></svg>
       <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6" fill="none"/></svg>
     </button>
@@ -60,7 +60,7 @@
 
 <button id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu"><span></span><span></span></button>
 <nav id="menu" class="glass" aria-label="Places">
-  <a href="#room" data-route="room" class="m-room">↺ the room</a>
+  <a href="#room" data-route="room" class="m-room">Back to the room</a>
   <a href="#films" data-route="films"><em>01</em><span>the screening hall</span><small>films</small></a>
   <a href="#library" data-route="library"><em>02</em><span>the library</span><small>poems &amp; stories</small></a>
   <a href="#stairs" data-route="stairs"><em>03</em><span>the stairs</span><small>posters &amp; design</small></a>
@@ -79,10 +79,10 @@
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
   <div class="modal-scrim" data-dismiss></div>
   <div class="modal-box glass">
-    <button class="modal-x" type="button" data-dismiss aria-label="Close">✕</button>
+    <button class="modal-x btn-icon" type="button" data-dismiss aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="modal-media"></div>
     <div class="modal-info"><p class="modal-meta"></p><h3 id="modal-title"></h3><div class="modal-body"></div></div>
-    <div class="modal-nav" hidden><button type="button" class="modal-prev" aria-label="Previous">←</button><button type="button" class="modal-next" aria-label="Next">→</button></div>
+    <div class="modal-nav" hidden><button type="button" class="modal-prev btn-icon" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><button type="button" class="modal-next btn-icon" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>
 </div>
 
@@ -93,8 +93,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="data.js?v=23"></script>
-<script src="app.js?v=23"></script>
-<script type="module" src="js/main.js?v=23"></script>
+<script src="data.js?v=30"></script>
+<script src="app.js?v=30"></script>
+<script type="module" src="js/main.js?v=30"></script>
 </body>
 </html>

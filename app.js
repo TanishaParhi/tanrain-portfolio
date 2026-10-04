@@ -95,8 +95,21 @@
   function findFilm(id) { return D.films.filter(function (f) { return f.id === id; })[0]; }
   function findPoem(id) { return D.poems.filter(function (p) { return p.id === id; })[0]; }
 
-  var back = function (to, label) { return '<a class="back-room" href="#' + to + '" data-route="' + to + '" data-cursor="back">← ' + label + "</a>"; };
-  var cue = '<p class="scroll-cue">scroll</p>';
+  var ICON = {
+    left: '<svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+    right: '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    out: '<svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>',
+    play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></svg>'
+  };
+  var cap = function (t) { return t.charAt(0).toUpperCase() + t.slice(1); };
+  var back = function (to, label) {
+    return '<a class="back-room btn btn-ghost btn-sm" href="#' + to + '" data-route="' + to + '" data-cursor="back" data-magnetic><span class="btn-ico" aria-hidden="true">' + ICON.left + '</span><span class="btn-label">' + cap(label) + "</span></a>";
+  };
+  var nextLink = function (route, small, title, extraStyle) {
+    return '<a class="next-world" href="#' + route + '" data-route="' + route + '"' + (extraStyle ? ' style="' + extraStyle + '"' : "") + '><small>' + small + '</small><span class="nw-row"><span class="nw-title">' + title + '</span><span class="nw-arrow" aria-hidden="true">' + ICON.right + "</span></span></a>";
+  };
+  var outLink = function (href, label) { return '<a class="link-arrow" href="' + href + '" target="_blank" rel="noopener"><span>' + label + '</span>' + ICON.out + "</a>"; };
+  var cue = '<p class="scroll-cue">Scroll</p>';
   var sticker = function (b, i, cls, style) {
     return '<span class="sticker ' + (cls || "") + '" style="' + (style || "") + '">' + (b ? "<b>" + esc(b) + "</b>" : "") + (i ? "<i>" + esc(i) + "</i>" : "") + "</span>";
   };
@@ -116,7 +129,7 @@
         '<div class="room-title"><p class="kicker"><span class="dot"></span>you are inside</p><h2>the room</h2>' +
         "<p>Every glowing ring is a door — the screen, the shelf, the stairs that climb out of the water, the desk, the window.</p></div>" +
         '<p class="room-hint">drag to look around · click a portal</p>' +
-        '<nav class="room-doors" aria-label="Doors">' + [["films", "films"], ["library", "library"], ["stairs", "stairs"], ["lab", "lab"], ["about", "window"]].map(function (d) { return '<a href="#' + d[0] + '" data-route="' + d[0] + '">' + d[1] + "</a>"; }).join("") + "</nav>" +
+        '<nav class="room-doors" aria-label="Doors">' + [["films", "films"], ["library", "library"], ["stairs", "stairs"], ["lab", "lab"], ["about", "window"]].map(function (d) { return '<a class="btn btn-ghost btn-sm" href="#' + d[0] + '" data-route="' + d[0] + '"><span class="btn-label">' + cap(d[1]) + "</span></a>"; }).join("") + "</nav>" +
         '<div class="room-cards">' + cards + "</div></section>";
     },
 
@@ -124,7 +137,7 @@
       var rows = D.films.map(function (f, i) {
         return '<a class="hall-row" href="#film/' + f.id + '" data-route="film/' + f.id + '" data-preview="' + frame(f.id, 1) + '" data-cursor="enter">' +
           '<span class="n">' + String(i + 1).padStart(2, "0") + '</span><span class="t">' + esc(f.title) + '</span><span class="k">' + esc(f.kind) +
-          '</span><span class="y">' + esc(f.year) + '</span><span class="a">↗</span></a>';
+          '</span><span class="y">' + esc(f.year) + '</span><span class="a" aria-hidden="true">' + ICON.right + "</span></a>";
       }).join("");
       var words = D.films.map(function (f) { return "<span>" + esc(f.title) + "<b>✦</b></span>"; }).join("");
       return back("room", "back to the room") +
@@ -136,7 +149,7 @@
         cue + "</section>" +
         '<section class="wrap"><div class="hall-list">' + rows + "</div></section>" +
         '<div class="marquee"><div class="marquee-track">' + words + words + "</div></div>" +
-        '<section class="wrap" style="padding:6rem 0 12rem"><a class="next-world" href="#library" data-route="library"><small>next door</small>the library →</a></section>' +
+        '<section class="wrap" style="padding:6rem 0 12rem">' + nextLink("library", "Next door", "The library") + "</section>" +
         '<img class="hall-preview" id="hall-preview" alt="">';
     },
 
@@ -144,11 +157,10 @@
       var f = findFilm(r.id), idx = D.films.indexOf(f), next = D.films[(idx + 1) % D.films.length];
       var lines = f.lines.map(function (l) { return '<section class="wrap film-line"><p class="split">' + esc(l) + "</p></section>"; }).join("");
       var flat = ""; for (var i = 0; i < f.frames; i++) flat += '<img src="' + frame(f.id, i) + '" alt="' + esc(f.title) + ' — frame ' + (i + 1) + '" loading="lazy">';
-      var links = (f.links || []).map(function (l) { return '<a href="' + l[1] + '" target="_blank" rel="noopener">' + esc(l[0]) + " ↗</a>"; }).join("") +
-        '<a href="https://drive.google.com/file/d/' + f.drive + '/view" target="_blank" rel="noopener">open on Drive ↗</a>';
+      var links = (f.links || []).map(function (l) { return outLink(l[1], cap(esc(l[0]))); }).join("") + outLink("https://drive.google.com/file/d/" + f.drive + "/view", "Open on Drive");
       return back("films", "back to the screening hall") +
         '<section class="wrap screen film-hero">' +
-        '<p class="kicker"><span class="dot"></span>film ' + String(idx + 1).padStart(2, "0") + " — " + esc(f.project ? "project: " + f.project : f.kind) + "</p>" +
+        '<p class="kicker"><span class="dot"></span>Film ' + String(idx + 1).padStart(2, "0") + " of " + String(D.films.length).padStart(2, "0") + (f.project ? " — project: " + esc(f.project) : "") + "</p>" +
         '<h1 class="display split">' + esc(f.title) + "</h1>" +
         '<div class="film-meta"><span class="chip live">' + esc(f.status) + '</span><span class="chip">' + esc(f.year) + '</span><span class="chip">' + esc(f.kind) + "</span></div>" +
         '<p class="lede" data-reveal>' + esc(f.logline) + "</p>" +
@@ -156,9 +168,9 @@
         cue + "</section>" + lines +
         '<section class="wrap"><div class="film-flat">' + flat + "</div></section>" +
         '<section class="wrap film-end">' +
-        '<button class="watch-btn" type="button" data-play="' + f.id + '" data-cursor="watch"><span class="play">▶</span>' + (f.id === "paralian" ? "watch the draft clips" : "watch the film") + "</button>" +
+        '<button class="watch-btn btn btn-primary btn-lg" type="button" data-play="' + f.id + '" data-cursor="watch" data-magnetic><span class="btn-disc" aria-hidden="true">' + ICON.play + '</span><span class="btn-label">' + (f.id === "paralian" ? "Watch the draft clips" : "Watch the film") + "</span></button>" +
         '<div class="film-links">' + links + "</div>" +
-        '<a class="next-world" href="#film/' + next.id + '" data-route="film/' + next.id + '"><small>next world</small>' + esc(next.title) + " →</a>" +
+        nextLink("film/" + next.id, "Next world", esc(next.title)) +
         "</section>" +
         '<p class="frame-hint">click a frame to hold it still</p>';
     },
@@ -179,7 +191,7 @@
         '<section class="wrap"><div class="lib-shelf">' + cards + "</div></section>" +
         '<div class="marquee"><div class="marquee-track"><span>hiraeth<b>✦</b></span><span>toska<b>✦</b></span><span>caleö<b>✦</b></span><span>noctifer<b>✦</b></span><span>astrologia<b>✦</b></span><span>billet-doux<b>✦</b></span>' +
         "<span>hiraeth<b>✦</b></span><span>toska<b>✦</b></span><span>caleö<b>✦</b></span><span>noctifer<b>✦</b></span><span>astrologia<b>✦</b></span><span>billet-doux<b>✦</b></span></div></div>" +
-        '<section class="wrap" style="padding:4rem 0 12rem"><a class="next-world" href="#stairs" data-route="stairs"><small>next door</small>the stairs →</a> &nbsp; <a href="' + D.links.substack + '" target="_blank" rel="noopener" style="font-family:var(--type);font-size:.76rem">the essays live on Substack ↗</a></section>';
+        '<section class="wrap" style="padding:4rem 0 12rem">' + nextLink("stairs", "Next door", "The stairs") + '<p style="margin-top:2rem">' + outLink(D.links.substack, "The essays live on Substack") + "</p></section>";
     },
 
     poem: function (r) {
@@ -197,8 +209,7 @@
         '<p class="poem-gloss" data-reveal>' + esc(p.gloss) + "</p>" + st + cue + "</section>" +
         '<div class="poem-text">' + p.html + "</div>" +
         (p.id === "alexithymia" ? '<div class="poem-words" aria-hidden="true"></div>' : "") +
-        '<nav class="poem-nav"><a class="next-world" href="#poem/' + prev.id + '" data-route="poem/' + prev.id + '"><small>previous book</small>← ' + esc(prev.title) + "</a>" +
-        '<a class="next-world" href="#poem/' + next.id + '" data-route="poem/' + next.id + '" style="text-align:right"><small>next book</small>' + esc(next.title) + " →</a></nav>" +
+        '<nav class="poem-nav">' + nextLink("poem/" + prev.id, "Previous book", esc(prev.title)) + nextLink("poem/" + next.id, "Next book", esc(next.title), "text-align:right;align-items:flex-end") + "</nav>" +
         "</article>";
     },
 
@@ -227,7 +238,7 @@
         '<p class="lede" data-reveal style="margin-top:1.2rem">Brand kits, logos, ads, campaigns and thumbnails — the other half of the work.</p>' +
         '<div class="stickers-inline">' + sticker("brand", "Kishmish · Sleek & Crafted", "blue", "--r:-3deg") + sticker("ads", "Audible · Alexa · Krispy Kreme", "mint", "--r:4deg") + sticker("thumbnails", "one hit 1M+ views", "ink", "--r:-2deg") + "</div>" +
         '<div class="archive-grid">' + arch + "</div>" +
-        '<div style="padding-top:5rem"><a class="next-world" href="#lab" data-route="lab"><small>next door</small>the lab →</a></div>' +
+        '<div style="padding-top:5rem">' + nextLink("lab", "Next door", "The lab") + "</div>" +
         "</div></section>";
     },
 
@@ -241,7 +252,7 @@
           '<div class="lab-copy"><span class="sticker mint" style="position:relative;--r:-3deg"><b>' + esc(it.tag) + "</b><i>" + esc(it.year) + "</i></span>" +
           '<h3 class="split">' + esc(it.title) + '</h3><p class="body-copy" data-reveal>' + esc(it.blurb) + "</p>" +
           (it.tools ? '<p class="tools">' + esc(it.tools) + "</p>" : "") +
-          (it.drive ? '<button class="play-btn" type="button" data-lab="' + it.id + '" data-cursor="watch"><span class="p">▶</span>WATCH</button>' : "") +
+          (it.drive ? '<button class="play-btn btn btn-ghost" type="button" data-lab="' + it.id + '" data-cursor="watch" data-magnetic><span class="btn-ico" aria-hidden="true">' + ICON.play + '</span><span class="btn-label">Watch</span></button>' : "") +
           "</div></article>";
       }).join("");
       var gens = D.generations.map(function (g, i) {
@@ -261,7 +272,7 @@
         '<h2 class="display" style="font-size:clamp(2.6rem,6vw,4.6rem)">The face wouldn’t hold.</h2><p class="body-copy" style="margin-top:1rem">Image tests from <em>The 9th Revolution</em> — Seedream 4.0 &amp; Nano Banana. The versions that almost made it.</p></div>' +
         gens + "</div></section>" +
         '<section class="wrap" style="padding:6rem 0 2rem"><p class="kicker"><span class="dot"></span>the paper trail</p><h2 class="display split" style="font-size:clamp(2.6rem,7vw,5.5rem)">Boards &amp; decks.</h2><div class="tickets">' + boards + "</div>" +
-        '<div style="padding:3rem 0 10rem"><a class="next-world" href="#about" data-route="about"><small>next door</small>the window →</a></div></section>';
+        '<div style="padding:3rem 0 10rem">' + nextLink("about", "Next door", "The window") + "</div></section>";
     },
 
     about: function () {
@@ -466,7 +477,30 @@
     return $$(".w", el);
   }
 
+  /* buttons: label rolls up on hover (a second copy slides in), and they lean toward the cursor */
+  function enhanceButtons(root) {
+    $$(".btn-label", root).forEach(function (l) {
+      if (l.dataset.rolled) return;
+      l.dataset.rolled = "1";
+      var t = l.textContent;
+      l.innerHTML = '<span class="roll"><span>' + esc(t) + '</span><span aria-hidden="true">' + esc(t) + "</span></span>";
+    });
+    if (!fine || reduced) return;
+    $$("[data-magnetic]", root).forEach(function (el) {
+      if (el.dataset.mag) return;
+      el.dataset.mag = "1";
+      var strength = el.classList.contains("btn-icon") ? 0.35 : 0.22;
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+        el.style.translate = (dx * strength).toFixed(1) + "px " + (dy * strength).toFixed(1) + "px";
+      });
+      el.addEventListener("pointerleave", function () { el.style.translate = ""; });
+    });
+  }
+
   function initEffects() {
+    enhanceButtons(page);
     initStickers();
     initPreview();
     if (!hasGsap || !window.ScrollTrigger || reduced) {
@@ -770,6 +804,7 @@
     fail: fail3d
   };
 
+  enhanceButtons(document);
   var first = parse(location.hash);
   var seen = false; try { seen = sessionStorage.getItem("tanrain.dived") === "1"; } catch (e) { /* private mode */ }
   if (first.name === "intro" || (first.name === "room" && !seen)) {

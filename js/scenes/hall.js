@@ -37,11 +37,11 @@ export function create(ctx) {
     g.add(glow, frame, screen, refl);
     scene.add(g);
     screens.push({ g, screen, frame, refl, glow, base: g.position.clone(), ph: i * 0.9, hover: 0, id: f.id, scale: 1 });
-    hotspots.push({ id: f.id, route: "film/" + f.id, label: f.title, sub: f.year, anchor: g.position.clone().add(new THREE.Vector3(0, H / 2 + 0.55, 0)), cursor: "enter" });
+    hotspots.push({ id: f.id, route: "film/" + f.id, label: f.title, sub: f.year, anchor: g.position.clone().add(new THREE.Vector3(0, H / 2 + 0.55, 0)), cursor: "enter", visible: () => ctx.TR.progress() < 0.12 });
     return tex("assets/films/" + f.id + "/01.webp").then((t) => { if (t) { mat.map = t; mat.color.set(0xffffff); reflMat.map = t; mat.needsUpdate = reflMat.needsUpdate = true; } });
   });
 
-  const dust = motes(small ? 60 : 120, [-14, 0.2, -14, 14, 6, 6], { size: 0.06, color: 0x91e5f6, opacity: 0.6 });
+  const dust = motes(small ? 60 : 120, [-14, 0.2, -14, 14, 6, 6], { size: 0.035, color: 0x91e5f6, opacity: 0.55 });
   scene.add(dust.points);
   const moon = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: 0xbfe8ff, transparent: true, opacity: 0.5, depthWrite: false, fog: false }));
   moon.scale.set(30, 30, 1); moon.position.set(0, 18, -60); scene.add(moon);
