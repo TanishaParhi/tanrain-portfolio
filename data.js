@@ -7,7 +7,7 @@ window.TR_DATA = {
     linkedin: "https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/",
     instagram: "https://www.instagram.com/taniverse.tm/",
     design: "https://www.instagram.com/aesthetes_meraki/",
-    email: "rainaparhi@gmail.com"
+    email: "tanrain.films@gmail.com"
   },
 
   /* ---------- films: each one gets its own 3D world ----------
