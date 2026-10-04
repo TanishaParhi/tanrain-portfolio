@@ -4,792 +4,97 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>TanRain — Tanisha Parhi</title>
-<meta name="description" content="The portfolio of Tanisha Parhi (TanRain): a small room at blue hour, floating on still water. AI films on the screen, experiments on the desk, poems on the shelf.">
+<meta name="description" content="Tanisha Parhi (TanRain) — writer, building films with AI. Dive into the eyes: a room of portals to her films, a magical library of poems, a staircase of posters.">
 <meta property="og:title" content="TanRain — Tanisha Parhi">
-<meta property="og:description" content="A small room at blue hour. AI films on the screen, experiments on the desk, poems on the shelf.">
-<meta property="og:image" content="assets/img/v-stars.jpg">
-<meta name="theme-color" content="#0B1B3A">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1B3A'/%3E%3Cpath d='M9 22h14M11 22V12l5-4 5 4v10' fill='none' stroke='%23D6A85C' stroke-width='1.6'/%3E%3Crect x='14' y='15' width='4' height='4' fill='%23D6A85C'/%3E%3C/svg%3E">
+<meta property="og:description" content="Dive into the eyes. A room of portals: films that are worlds, poems that open into skies, a staircase of posters.">
+<meta property="og:image" content="assets/intro/eyes.webp">
+<meta name="theme-color" content="#02060b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2302060b'/%3E%3Cellipse cx='16' cy='16' rx='11' ry='6.5' fill='none' stroke='%2384D2F6' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2359A5D8'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%2302060b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Special+Elite&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
-<noscript><style>#veil,#room,.hotspots,.room-hint,#menu-btn,#menu,.back,.next-room{display:none!important}body{overflow:auto!important}.panel{position:static!important;visibility:visible!important;clip-path:none!important;overflow:visible!important;height:auto!important}</style></noscript>
+<link rel="preload" as="image" href="assets/intro/eyes.webp" media="(min-aspect-ratio: 1/1)">
+<link rel="preload" as="image" href="assets/intro/eyes-portrait.webp" media="(max-aspect-ratio: 1/1)">
+<link rel="stylesheet" href="style.css?v=23">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+  "tr/shaders": "./js/shaders.js?v=23"
 } }
 </script>
 </head>
 <body>
 
-<div id="sky" aria-hidden="true"><div class="stars s1"></div><div class="stars s2"></div><div class="horizon"></div></div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="sea-fallback" aria-hidden="true"></div>
 
-<!-- ═══════════════ VEIL ═══════════════ -->
-<div id="veil" role="dialog" aria-label="Welcome">
-  <div class="veil-inner">
-    <p class="veil-kicker"><span class="dot"></span>TANISHA PARHI — writer, building films</p>
-    <h1 class="veil-title">TanRain</h1>
-    <p class="veil-sub">a small room at blue hour, floating on still water.<br>
-    the films are on the screen, the experiments are on the desk,<br class="wide-only"> the poems are on the shelf.</p>
-    <div class="veil-load" aria-live="polite"><span class="veil-bar"><i></i></span><span class="veil-pct">lighting the lamp…</span></div>
-    <div class="veil-actions" hidden>
-      <button id="enter-btn" type="button">enter the room</button>
-      <button id="enter-sound" type="button" class="linklike">enter with rain on ♪</button>
-    </div>
-    <a class="veil-simple" href="?flat">or read the simple version →</a>
+<!-- the eyes — the way in -->
+<section id="intro" aria-label="Welcome">
+  <div class="eyes" id="eyes"><img src="assets/intro/eyes.webp" alt="" class="eyes-img eyes-wide"><img src="assets/intro/eyes-portrait.webp" alt="" class="eyes-img eyes-tall"></div>
+  <div class="eyes-light" aria-hidden="true"></div>
+  <div class="intro-copy">
+    <p class="intro-kicker"><span class="dot"></span>TANISHA PARHI</p>
+    <h1 class="intro-title">TanRain</h1>
+    <p class="intro-sub">writer, building films with machines.<br>look closer.</p>
   </div>
-</div>
+  <button class="intro-go" id="dive" type="button"><span>dive in</span><i aria-hidden="true">↓</i></button>
+  <p class="intro-hint">scroll, tap, or press any key</p>
+  <div class="intro-load" aria-live="polite"><i></i></div>
+</section>
 
-<!-- ═══════════════ THE ROOM (3D) ═══════════════ -->
-<div id="room" aria-hidden="true"><canvas id="room-canvas"></canvas></div>
-<div class="hotspots" id="hotspots">
-  <button class="hotspot" type="button" data-open="films" style="--r:-3deg"><b>the screening room</b><i>my films</i></button>
-  <button class="hotspot" type="button" data-open="library" style="--r:2.5deg"><b>the library</b><i>poems &amp; stories</i></button>
-  <button class="hotspot" type="button" data-open="lab" style="--r:-2deg"><b>the lab</b><i>experiments</i></button>
-  <button class="hotspot" type="button" data-open="about" style="--r:3deg"><b>the window</b><i>about me</i></button>
-</div>
-<p class="room-hint"><span>drag to look around</span> · <span>click anything that glows</span></p>
+<main id="page" tabindex="-1"></main>
 
-<!-- ═══════════════ HUD ═══════════════ -->
+<div id="labels" aria-hidden="false"></div>
+
 <header id="hud">
-  <a class="brand" href="#" data-close>
-    <span class="dot"></span><span class="brand-name">TANISHA PARHI</span><span class="brand-sub">tanrain</span>
-  </a>
+  <a class="brand" href="#room" data-route="room"><span class="dot"></span><span class="brand-name">TANISHA PARHI</span><span class="brand-sub">tanrain</span></a>
   <div class="hud-right">
-    <a class="pill" href="mailto:rainaparhi@gmail.com">WORK WITH ME ↗</a>
-    <button class="icon-btn" id="sound-btn" type="button" aria-pressed="false" aria-label="Rain sound">
+    <a class="pill glass" href="mailto:rainaparhi@gmail.com">WORK WITH ME ↗</a>
+    <button class="icon-btn glass" id="sound-btn" type="button" aria-pressed="false" aria-label="Sound">
       <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none"/></svg>
       <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6" fill="none"/></svg>
-    </button>
-    <button class="icon-btn" id="night-btn" type="button" aria-pressed="false" aria-label="Midnight">
-      <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
-      <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17h18M6 17a6 6 0 0 1 12 0" fill="none"/><path d="M12 5v3M5 9l2 2M19 9l-2 2" fill="none"/></svg>
     </button>
   </div>
 </header>
 
 <button id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu"><span></span><span></span></button>
-<nav id="menu" aria-label="Rooms">
-  <a href="#" data-close class="m-room">↺ back to the room</a>
-  <a href="#about" data-open="about"><em>01</em><span>the window</span><small>about me</small></a>
-  <a href="#films" data-open="films"><em>02</em><span>the screening room</span><small>films</small></a>
-  <a href="#lab" data-open="lab"><em>03</em><span>the lab</span><small>experiments</small></a>
-  <a href="#library" data-open="library"><em>04</em><span>the library</span><small>writing</small></a>
+<nav id="menu" class="glass" aria-label="Places">
+  <a href="#room" data-route="room" class="m-room">↺ the room</a>
+  <a href="#films" data-route="films"><em>01</em><span>the screening hall</span><small>films</small></a>
+  <a href="#library" data-route="library"><em>02</em><span>the library</span><small>poems &amp; stories</small></a>
+  <a href="#stairs" data-route="stairs"><em>03</em><span>the stairs</span><small>posters &amp; design</small></a>
+  <a href="#lab" data-route="lab"><em>04</em><span>the lab</span><small>experiments</small></a>
+  <a href="#about" data-route="about"><em>05</em><span>the window</span><small>about me</small></a>
   <div class="menu-foot">
     <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">substack ↗</a>
     <a href="https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/" target="_blank" rel="noopener">linkedin ↗</a>
-    <a href="https://www.instagram.com/taniverse.tm/" target="_blank" rel="noopener">instagram ↗</a>
+    <a href="https://www.instagram.com/aesthetes_meraki/" target="_blank" rel="noopener">@aesthetes_meraki ↗</a>
     <a href="?flat">simple version</a>
   </div>
 </nav>
 
-<main id="panels">
+<div id="portal" aria-hidden="true"></div>
 
-  <!-- ═══════════ 01 · THE WINDOW — ABOUT ═══════════ -->
-  <section class="panel p-about" id="about" aria-label="About">
-    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">01 · the window</span></div>
-    <div class="p-wrap">
-      <p class="kicker"><span class="dot"></span>the window — about</p>
-
-      <h2 class="manifesto" id="manifesto">I write about <span class="inl"><img src="assets/img/v-mishen.jpg" alt=""></span> <em>film</em> and <em>the mind.</em> Now I'm learning to make <span class="inl"><img src="assets/img/contingency-3.jpg" alt=""></span> them — with <em>machines,</em> <span class="inl wide"><img src="assets/img/v-stars.jpg" alt=""></span> and with the <em>failure</em> left in the shot.</h2>
-
-      <div class="about-grid">
-        <figure class="tape-photo" style="--r:-3deg">
-          <img src="assets/img/v-poet.jpg" alt="Tanisha Parhi, looking down at a notebook" loading="lazy">
-          <figcaption>me, mid-take — from the poet intro</figcaption>
-        </figure>
-        <div class="about-copy">
-          <p class="lede">I related to a man who wished his plane would crash. It took me an entire essay — through
-          Fincher's direction, the psychology of dissociation, and my own carefully maintained routines — to understand why.</p>
-          <p>That is how I read films: one movie, several lenses at once. Psychology, cinematography, philosophy, and the
-          admission I'd rather leave out. This year, writing about films stopped being enough. I'm making them — with AI
-          tools, a laptop, and no crew.</p>
-          <p>I'm not arrived. I'm building. What I have is the build itself: the shot that took forty generations, the
-          character whose face wouldn't hold across two scenes, and this small room where all of it lives.</p>
-          <span class="sticker" style="--r:-5deg">AVAILABLE FOR COLLABS</span>
-        </div>
-        <aside class="now">
-          <p class="now-label">latest film</p>
-          <p class="now-title">Anamne Booth</p>
-          <p class="now-meta">a magical-realist memory drama — a promise kept too late, and a photo booth that remembers</p>
-          <a class="now-go" href="#films" data-open="films" data-film="film-anamne">watch it in the screening room →</a>
-        </aside>
-      </div>
-
-      <ul class="elsewhere">
-        <li><a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener"><b>Substack</b><span>essays &amp; the film diary</span></a></li>
-        <li><a href="https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/" target="_blank" rel="noopener"><b>LinkedIn</b><span>the professional room</span></a></li>
-        <li><a href="https://www.instagram.com/taniverse.tm/" target="_blank" rel="noopener"><b>Instagram</b><span>@taniverse.tm</span></a></li>
-        <li><a href="mailto:rainaparhi@gmail.com"><b>Email</b><span>rainaparhi@gmail.com</span></a></li>
-      </ul>
-
-      <a class="next-room" href="#films" data-open="films"><small>next room</small>the screening room →</a>
-    </div>
-  </section>
-
-  <!-- ═══════════ 02 · THE SCREENING ROOM — FILMS ═══════════ -->
-  <section class="panel p-films" id="films" aria-label="Films">
-    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">02 · the screening room</span></div>
-    <div class="p-wrap">
-      <header class="films-hero">
-        <p class="kicker"><span class="dot"></span>the screening room</p>
-        <h2 class="display">FILMS</h2>
-        <div class="fan" aria-hidden="true">
-          <img src="assets/img/v-kalaagni.jpg" alt="" style="--i:0">
-          <img src="assets/img/v-welcome.jpg" alt="" style="--i:1">
-          <img src="assets/img/contingency-1.jpg" alt="" style="--i:2">
-          <img src="assets/img/v-stars.jpg" alt="" style="--i:3">
-          <img src="assets/img/ninth-1.jpg" alt="" style="--i:4">
-        </div>
-        <p class="display-sub">IN ORDER<br>OF BECOMING</p>
-        <p class="tools"><b>MADE WITH</b> midjourney · veo 3 · kling · higgsfield · seedream · nano banana · freepik</p>
-      </header>
-
-      <div class="coverflow" id="coverflow" aria-roledescription="carousel" aria-label="Films carousel">
-        <div class="cf-stage"><div class="cf-track"></div></div>
-        <div class="cf-ui">
-          <button class="cf-btn cf-prev" type="button" aria-label="Previous film">←</button>
-          <span class="cf-pill" aria-live="polite"></span>
-          <button class="cf-btn cf-next" type="button" aria-label="Next film">→</button>
-        </div>
-        <p class="cf-hint">drag, use the arrows, or click the centre card to watch</p>
-      </div>
-
-      <div class="film-index" id="film-index" aria-label="All films"></div>
-
-      <div class="film-list">
-
-        <article class="film" id="film-anamne" data-title="Anamne Booth" data-year="2026" data-yy="26" data-kind="magical-realist memory drama · ~5 min" data-label="memory drama" data-status="new cut" data-img="assets/img/contingency-1.jpg" data-drive="1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ">
-          <img class="film-img" src="assets/img/contingency-1.jpg" alt="Anamne Booth — a photo booth shop full of hanging prints, lit gold" loading="lazy">
-          <h3>Anamne Booth</h3>
-          <p class="meta">new cut — 2026 — magical-realist memory drama · ~5 min</p>
-          <p class="logline">On the day she finally keeps a promise, a young woman steps into a photo booth that remembers more than she does — and the person beside her may never have truly been there.</p>
-          <div class="film-more">
-            <p class="dnote">“I have always been afraid of forgetting. Photographs are the one place where the people we lose keep their faces — creased, fading, but still ours.” <em>— from the director's note</em></p>
-            <p class="frame-label">project: Contingency — the watermarked cut, August 2026</p>
-            <div class="stillstrip">
-              <img src="assets/img/v-contingency-wm.jpg" alt="Anamne Booth still — walking down a sunlit old street" loading="lazy">
-              <img src="assets/img/contingency-2.jpg" alt="Anamne Booth still" loading="lazy">
-              <img src="assets/img/contingency-3.jpg" alt="Anamne Booth still" loading="lazy">
-              <img src="assets/img/contingency-4.jpg" alt="Anamne Booth still" loading="lazy">
-            </div>
-            <a class="ext" href="https://canva.link/f79h4ubv8shb9db" target="_blank" rel="noopener">moodboard + storyboard ↗</a>
-            <a class="ext" href="https://drive.google.com/file/d/1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ/view" target="_blank" rel="noopener">open the film on Drive ↗</a>
-          </div>
-          <details class="watch"><summary>watch the film</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ/preview" title="Anamne Booth" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film" id="film-paralian" data-title="Paralian" data-year="in development" data-yy="26" data-kind="two-episode short · 2.39:1" data-label="the sea" data-status="in development">
-          <h3>Paralian</h3>
-          <p class="meta">in development — two-episode short · 2.39:1 anamorphic</p>
-          <p class="logline">A man sheds every false thing that ever held him — and is granted the one freedom that forecloses the only thing he needs. The ocean gives him exactly what he asks for.</p>
-          <div class="film-more">
-            <p class="dnote">Episode One, <em>The Coronation</em>, is delivered in design — city, forest, ocean, each with its own locked palette. Episode Two, <em>The Losing of the Shadows</em>, is being written. No frames are public yet; this film believes in withholding.</p>
-            <p class="frame-label">five symbols carry it: a shadow · books · a crown of gaps · a prism · hawks</p>
-          </div>
-        </article>
-
-        <article class="film" id="film-mishen" data-title="Mishen" data-year="Jan 2026" data-yy="26" data-kind="series · pitch trailer" data-label="series trailer" data-status="cut" data-img="assets/img/v-mishen.jpg" data-drive="1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t">
-          <img class="film-img" src="assets/img/v-mishen.jpg" alt="Mishen — a dancing bronze figure in a violet temple garden" loading="lazy">
-          <h3>Mishen — trailer</h3>
-          <p class="meta">cut — January 2026 — series pitch trailer</p>
-          <p class="logline">The trailer for a series still finding its final form — cut to prove the world could hold.</p>
-          <div class="film-more">
-            <a class="ext" href="https://canva.link/pro2id65dp9m3k0" target="_blank" rel="noopener">series pitch deck ↗</a>
-            <a class="ext" href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener">moodboard ↗</a>
-            <a class="ext" href="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/view" target="_blank" rel="noopener">open on Drive ↗</a>
-          </div>
-          <details class="watch"><summary>roll the trailer</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/preview" title="Mishen trailer" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film" id="film-welcome" data-title="Welcome 2026" data-year="Jan 2026" data-yy="26" data-kind="short" data-label="new year" data-status="finished" data-img="assets/img/v-welcome.jpg" data-drive="1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema">
-          <img class="film-img" src="assets/img/v-welcome.jpg" alt="Welcome 2026 — a woman asleep in dappled light among flowers" loading="lazy">
-          <h3>Welcome 2026</h3>
-          <p class="meta">finished — January 2026 — short</p>
-          <p class="logline">A short made to open the year.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/preview" title="Welcome 2026" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film" id="film-stars" data-title="Touch the Stars" data-year="Dec 2025" data-yy="25" data-kind="short" data-label="night sky" data-status="finished" data-img="assets/img/v-stars.jpg" data-drive="1OiI4mUARxDNLercmMdoQojhdUtnSImNx">
-          <img class="film-img" src="assets/img/v-stars.jpg" alt="Touch the Stars — a small child in a field reaching up at a sky full of stars" loading="lazy">
-          <h3>Touch the Stars</h3>
-          <p class="meta">finished — December 2025 — short</p>
-          <p class="logline">A child, a field, a sky full of stars — and a reach.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/preview" title="Touch the Stars" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film" id="film-kalaagni" data-title="Kala Agni" data-year="Oct 2025" data-yy="25" data-kind="60-second film · Midjourney &amp; Veo 3" data-label="the fire of art" data-status="finished" data-img="assets/img/v-kalaagni.jpg" data-drive="1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ">
-          <img class="film-img" src="assets/img/v-kalaagni.jpg" alt="Kala Agni — a hand in lace sleeves reaching for a vintage radio on a patterned carpet" loading="lazy">
-          <h3>Kala Agni</h3>
-          <p class="meta">finished — October 2025 — 60-second film</p>
-          <p class="logline">The fire of art: a single flame passed from the rock paintings of Bhimbetka, through Chola bronzes and Mughal miniatures, into modern and digital art — Indian creativity that has never gone out, only changed form.</p>
-          <div class="film-more">
-            <p class="dnote">“By using AI to create dynamic, seamless transitions, my goal was to craft a modern, cinematic poem.”</p>
-            <p class="frame-label">tools — Midjourney · Google Veo 3</p>
-            <a class="ext" href="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/view" target="_blank" rel="noopener">open on Drive ↗</a>
-          </div>
-          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/preview" title="Kala Agni" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film" id="film-ninth" data-title="The 9th Revolution" data-year="Sept 2025" data-yy="25" data-kind="AI horror short" data-label="horror" data-status="finished" data-img="assets/img/v-ninth.jpg" data-drive="1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5">
-          <img class="film-img" src="assets/img/v-ninth.jpg" alt="The 9th Revolution — a silhouette at a round window under a violet sky" loading="lazy">
-          <h3>The 9th Revolution</h3>
-          <p class="meta">finished — September 2025 — AI horror short</p>
-          <p class="logline">An AI horror short — the first film taken all the way from storyboard to final cut.</p>
-          <div class="film-more">
-            <div class="stillstrip">
-              <img src="assets/img/ninth-1.jpg" alt="The 9th Revolution still — three figures under neon ticket signs" loading="lazy">
-              <img src="assets/img/ninth-3.jpg" alt="The 9th Revolution frame" loading="lazy">
-              <img src="assets/img/ninth-2.jpg" alt="The 9th Revolution frame" loading="lazy">
-            </div>
-            <a class="ext" href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener">the storyboard ↗</a>
-            <a class="ext" href="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/view" target="_blank" rel="noopener">open on Drive ↗</a>
-          </div>
-          <details class="watch"><summary>watch the final cut</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/preview" title="The 9th Revolution" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-      </div>
-
-      <a class="next-room" href="#lab" data-open="lab"><small>next room</small>the lab →</a>
-    </div>
-  </section>
-
-  <!-- ═══════════ 03 · THE LAB — EXPERIMENTS ═══════════ -->
-  <section class="panel p-lab" id="lab" aria-label="The lab">
-    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">03 · the lab</span></div>
-    <div class="p-wrap">
-      <p class="kicker"><span class="dot"></span>the lab</p>
-      <h2 class="lab-title">
-        <svg class="stk-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3.1 1.6-1.9 3.1-3.1 5.2-3.1 3.6 0 5.9 3.7 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>
-        Experiments,<br>tool fights<span class="stk" style="--r:8deg">WIP</span><br>&amp; dead ends.<svg class="stk-note" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5a2.5 2.5 0 1 1-2-2.45V5l11-2v12.5a2.5 2.5 0 1 1-2-2.45V7.3L9 8.6z"/></svg>
-      </h2>
-      <div class="lab-row">
-        <button class="reel-btn" type="button" data-film="exp-clips"><span class="play">▶</span> PLAY THE NEWEST REEL</button>
-        <p class="lab-lede">Nothing in this room is finished, and that's the point. This is where the tools get interrogated — what the demo promised, what actually happened.</p>
-      </div>
-
-      <div class="collage">
-
-        <article class="film exp" id="exp-viviana" data-title="Viviana — world building" data-year="Aug 2026" data-yy="26" data-kind="world building · cinematic AI book trailer" data-label="world building" data-img="assets/img/viviana-1.jpg" style="--r:-2deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">world building</span><span class="exp-yy">'26</span>
-          <img class="film-img" src="assets/img/viviana-1.jpg" alt="Viviana — a woman with dark curls in a wingback chair, candlelit study" loading="lazy">
-          <h3>Viviana — world building</h3>
-          <p class="meta">aug 2026 — cinematic AI book trailer frames</p>
-          <p class="logline">Building a world before shooting it: the people, the parlour, the candlelight — locked as frames first.</p>
-          <div class="film-more">
-            <div class="stillstrip">
-              <img src="assets/img/viviana-0.jpg" alt="Viviana — character frame" loading="lazy">
-              <img src="assets/img/viviana-2.jpg" alt="Viviana — the parlour, red velvet sofa and lamps" loading="lazy">
-              <img src="assets/img/viviana-3.jpg" alt="Viviana — the parlour from the door" loading="lazy">
-              <img src="assets/img/viviana-4.jpg" alt="Viviana — a man in a leather jacket on a velvet sofa" loading="lazy">
-              <img src="assets/img/viviana-5.jpg" alt="Viviana — character frame" loading="lazy">
-            </div>
-          </div>
-        </article>
-
-        <article class="film exp" id="exp-clips" data-title="Short film clips — compilation" data-year="Sep 2026" data-yy="26" data-kind="clips compilation" data-label="newest" data-img="assets/img/v-clips.jpg" data-drive="1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv" style="--r:1.8deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">newest</span><span class="exp-yy">'26</span>
-          <img class="film-img" src="assets/img/v-clips.jpg" alt="A wet, empty city street under grey towers and a blank billboard" loading="lazy">
-          <h3>Short film clips — compilation</h3>
-          <p class="meta">sep 2026 — clips compilation</p>
-          <p class="logline">A reel of shots from the newest short-film work.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv/preview" title="Short film clips compilation" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film exp" id="exp-gozero" data-title="Go Zero — concept ad" data-year="Nov 2025" data-yy="25" data-kind="commercial test" data-label="commercial test" data-img="assets/img/v-gozero.jpg" data-drive="1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1" style="--r:-1.5deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">commercial test</span><span class="exp-yy">'25</span>
-          <img class="film-img" src="assets/img/v-gozero.jpg" alt="Go Zero — commuters in a quiet, sunlit train carriage" loading="lazy">
-          <h3>Go Zero — concept ad</h3>
-          <p class="meta">nov 2025 — Midjourney, Freepik, Higgsfield, Kling, Veo 3.1</p>
-          <p class="logline">Rohan, in his forties, wants to play his old guitar but the whispers of “too late” always win — until the word ZERO on a sugar-free ice-cream tub becomes his permission slip, and his grey world explodes into colour.</p>
-          <div class="film-more">
-            <p class="frame-label">concept &amp; keyframes — Midjourney, Freepik · animation — Higgsfield, Kling, Veo 3.1 · sound — Epidemic Sound</p>
-            <a class="ext" href="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/view" target="_blank" rel="noopener">open on Drive ↗</a>
-          </div>
-          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/preview" title="Go Zero concept ad" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film exp" id="exp-caption" data-title="Birds born in a cage" data-year="Jan 2026" data-yy="26" data-kind="mixed AI + live action" data-label="mixed media" data-img="assets/img/v-caption.jpg" data-drive="162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU" data-aspect="portrait" style="--r:2deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">mixed media</span><span class="exp-yy">'26</span>
-          <img class="film-img" src="assets/img/v-caption.jpg" alt="An engraving of a figure whose head is a birdcage, a black bird inside" loading="lazy">
-          <h3>Birds born in a cage</h3>
-          <p class="meta">jan 2026 — caption video · mixed AI + live action</p>
-          <p class="logline">A vertical caption piece in engraving and paper — words and image sharing the frame.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/preview" title="Birds born in a cage" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film exp" id="exp-poet" data-title="TanRain — poet intro" data-year="Nov 2025" data-yy="25" data-kind="mixed AI + live action" data-label="first hybrid" data-img="assets/img/v-poet.jpg" data-drive="1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5" data-aspect="portrait" style="--r:-2.5deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">first hybrid</span><span class="exp-yy">'25</span>
-          <img class="film-img" src="assets/img/v-poet.jpg" alt="Tanisha looking down at a notebook against a wooden wall" loading="lazy">
-          <h3>TanRain — poet intro</h3>
-          <p class="meta">nov 2025 — mixed AI + live action</p>
-          <p class="logline">Live footage of me, AI everything else. Where the two layers meet is where the interesting problems live.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/preview" title="TanRain poet intro" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-
-        <article class="film exp" id="exp-info" data-title="AI info video" data-year="Apr 2025" data-yy="25" data-kind="the first experiment" data-label="where it began" data-img="assets/img/v-info.jpg" data-drive="1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP" data-aspect="portrait" style="--r:1.5deg">
-          <span class="tape" aria-hidden="true"></span>
-          <span class="exp-tag">where it began</span><span class="exp-yy">'25</span>
-          <img class="film-img" src="assets/img/v-info.jpg" alt="Hands slicing beetroot and carrots in a warm, sunlit kitchen" loading="lazy">
-          <h3>AI info video</h3>
-          <p class="meta">apr 2025 — the first experiment</p>
-          <p class="logline">The very first thing I made with these tools. It's here because the beginning belongs in the record too.</p>
-          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
-          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/preview" title="AI info video" allow="autoplay; fullscreen"></iframe></div></details>
-        </article>
-      </div>
-
-      <div class="gen-wall">
-        <h3 class="hand-h">the wall of forty generations</h3>
-        <p class="lab-sub">image tests from <em>The 9th Revolution</em> — Seedream 4.0 &amp; Nano Banana, October 2025. The face wouldn't stay the same. These are the versions that almost made it.</p>
-        <div class="polaroids">
-          <figure class="polaroid" style="--r:-4deg"><img src="assets/img/ninth-2.jpg" alt="Generation test — Seedream 4.0" loading="lazy"><figcaption>seedream 4.0 · gen 10</figcaption></figure>
-          <figure class="polaroid" style="--r:3deg"><img src="assets/img/ninth-4.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 14</figcaption></figure>
-          <figure class="polaroid" style="--r:-2deg"><img src="assets/img/ninth-5.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 12</figcaption></figure>
-          <figure class="polaroid" style="--r:4deg"><img src="assets/img/ninth-6.jpg" alt="Generation test — Seedream 4.0" loading="lazy"><figcaption>seedream 4.0 · gen 8</figcaption></figure>
-          <figure class="polaroid" style="--r:-3deg"><img src="assets/img/ninth-3.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 23</figcaption></figure>
-        </div>
-      </div>
-
-      <div class="tickets-wrap">
-        <h3 class="hand-h">the paper trail</h3>
-        <p class="lab-sub">every film starts as a wall of references and a stack of frames.</p>
-        <div class="tickets">
-          <a class="ticket" href="https://canva.link/f79h4ubv8shb9db" target="_blank" rel="noopener"><small>admit one · moodboard + storyboard</small><b>Contingency</b><i>↗</i></a>
-          <a class="ticket" href="https://canva.link/pro2id65dp9m3k0" target="_blank" rel="noopener"><small>admit one · series pitch deck</small><b>Mishen</b><i>↗</i></a>
-          <a class="ticket" href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener"><small>admit one · moodboard</small><b>Mishen</b><i>↗</i></a>
-          <a class="ticket" href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener"><small>admit one · storyboard</small><b>The 9th Revolution</b><i>↗</i></a>
-        </div>
-      </div>
-
-      <a class="next-room" href="#library" data-open="library"><small>next room</small>the library →</a>
-    </div>
-  </section>
-
-  <!-- ═══════════ 04 · THE LIBRARY — WRITING ═══════════ -->
-  <section class="panel p-library" id="library" aria-label="The library">
-    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">04 · the library</span></div>
-    <div class="p-wrap">
-      <p class="kicker"><span class="dot"></span>the library</p>
-      <h2 class="lib-title">The writing that<br><em>started everything.</em></h2>
-      <p class="lib-lede">Before the films there were poems — about words that won't come out, houses that don't exist, and light that only shows itself to minds that wander. Pull a book off the shelf.</p>
-
-      <div class="spines" id="spines"></div>
-
-      <div class="shelves-src">
-<div class="shelf">
-          <h3 class="shelf-h">poems</h3>
-
-          <details class="poem" id="poem-hiraeth">
-            <summary><span class="p-num">i.</span><span class="p-title">Hiraeth</span><span class="p-gloss">a deep longing for a home — perhaps one that never was</span></summary>
-            <div class="poem-body">
-              <p>The house of his dreams ain't a big bungalow in a remote place with opulent comforts —
-              but a tranquil cottage in the middle of woods, or maybe under the celestial northern lights,
-              or by the calm yet angry sea.</p>
-              <p>Because there is a pleasure in the pathless woods,<br>
-              There is a rapture in the iridescent polar lights,<br>
-              There is a society where one intrudes on the deep sea.</p>
-              <p>The house of his dreams has always been greeted with the first rays of sunlight and the aroma
-              of coffee in the first blush. Days filled with company of art, music, poetry, love — cuz these
-              are what we humans stay alive for.</p>
-              <p>And when the orange, yellow, and red sunset fades in the west,<br>
-              The birds chirp, nocturnal nature spirits awaken, and the enchanting melancholy twilight makes
-              its appearance.<br>
-              That is the time of the day when he picks up his pen, bleeds out poetry, and writes holy
-              billet-doux to be read later.</p>
-              <p>When black by black the dark takes over, the noctifer will notify and the stellifer sky will
-              glimmer. And he'll lie on the rooftop with a person who has astrologia.</p>
-              <p>The house of his dreams is indeed a cottagecore aesthetic but with a cyberpunk twist.<br>
-              Log cabin with blossoming red, blue, green roses; tulips, sunflowers, and an amaryllis garden.<br>
-              An open green field nearby gives a sense of freedom.<br>
-              A library having books that give wings to the mind and flight to the imagination.<br>
-              A gaming room — literal portal to dreamy worlds — with neon lights energizing every bone of the body.<br>
-              A living room with a crackling fireplace that invites him to its hearth and warms his frozen bones.<br>
-              A bedroom that unbinds him from the toska and lets him dive into the depths and feel the essence
-              of the other.</p>
-              <p>But in the end, they say<br>
-              Home is not a place, instead a person,<br>
-              Warmth was never merely a blanket,<br>
-              Melancholy was the sounds on a winter's night<br>
-              And the arm of the right one is what you call caleö.</p>
-              <p class="sig">— T.R.</p>
-              <p class="gloss-note">hiraeth · toska · caleö — the poem keeps its own dictionary of longing:
-              Welsh for homesickness for a place that never existed; Nabokov's untranslatable ache of the soul;
-              Latin for <em>to be warm — to be in love</em>.</p>
-            </div>
-          </details>
-
-          <details class="poem" id="poem-alexithymia">
-            <summary><span class="p-num">ii.</span><span class="p-title">Alexithymia</span><span class="p-gloss">the inability to express emotions verbally</span></summary>
-            <div class="poem-body">
-              <p>The butterflies of unspoken words roam inside my head<br>
-              There are millions and billions of them<br>
-              They fill up the whole space of the skull<br>
-              Hovering and bumping over the cogs and wheels<br>
-              They trigger moments of unspoken bliss<br>
-              There is a graveyard of words, too<br>
-              Long lost that will never get a chance to escape</p>
-              <p>The heart is heavy too,<br>
-              With an ocean of emotions deep,<br>
-              A thousand words within it sleep,<br>
-              But when they seek to leave the soul,<br>
-              The tongue is silent, and the words won't roll.</p>
-              <p>The eyes may water with unshed tears,<br>
-              The chest may heave with unspoken fears,<br>
-              The mind may crowd with butterflies of thoughts unshared,<br>
-              But the words remain locked,<br>
-              The soul impaired.</p>
-              <p>Oh, the frustration of a heart in chains,<br>
-              Desperate to break free of wordless pains,<br>
-              But unable to find the right expression,<br>
-              To convey the depth of its impression.</p>
-              <p>Words betray me when I speak<br>
-              But when jotted down on paper<br>
-              They join the dots of constellations<br>
-              What's their philosophy?<br>
-              Are they a colour palette of poetry?</p>
-              <p>The poet's pen may flow with ease,<br>
-              As words are feelings, the poet bleeds<br>
-              But for some, words refuse to appease,<br>
-              And so the heart remains unheard,<br>
-              Its feelings are lost,<br>
-              Its voice deferred.</p>
-              <p>Yet still, it beats, this heart of mine,<br>
-              With feelings vast and thoughts divine,<br>
-              It sings a ballad of its own.<br>
-              And though the words may not come out,<br>
-              The emotions still exist, without a doubt.</p>
-              <p>So, I let the heart beat on,<br>
-              And drown me with its melody<br>
-              Even when the words remain unsung,<br>
-              For though they may not find a voice,<br>
-              The feelings remain, and drowning is a choice.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem" id="poem-polaroid">
-            <summary><span class="p-num">iii.</span><span class="p-title">The Polaroid</span><span class="p-gloss">memory, developed in darkness</span></summary>
-            <div class="poem-body">
-              <p>I close my eyes<br>
-              And hear the clicking of the memory reel as it starts spinning inside my head,<br>
-              I am stuck in a causality loop<br>
-              I see the glimpses of every moment I have spent with you,<br>
-              I snap and imprint them on Polaroids</p>
-              <p>They say darkness is necessary for Polaroids to develop fully and brilliantly<br>
-              And after driving through the waves of darkness we've been through<br>
-              When I revisit the snaps, I realize that<br>
-              In the darkest nights, we see the brightest stars</p>
-              <p>I collect the stars of our memories and keep them<br>
-              Inside the special pocket stitched inside my chest,<br>
-              The stars align themselves and form a wonder that lights up the dark nights<br>
-              And that's when I know how vital you are to me.</p>
-              <p>They say music is life, that's why our hearts have beats<br>
-              And you know our heart syncs with the rhythm of the music we play?<br>
-              So if I were to say that you are the music of my heart, then it wouldn't be a lie,<br>
-              Because when we bind our forces we balance each other.</p>
-              <p>In a nutshell, you are the tapestry of art that contains the knowledge of the Universe<br>
-              You are the mesh of art and science that contains the vastness of infinity<br>
-              You are the artist who will map out the new world with the history of our origin<br>
-              and discover the mysteries of the universe.</p>
-              <p>And I think we are destined to be together for a long time<br>
-              and that's the reason our stars aligned.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem" id="poem-alpenglow">
-            <summary><span class="p-num">iv.</span><span class="p-title">Alpenglow</span><span class="p-gloss">for the auroras, and the minds that wander</span></summary>
-            <div class="poem-body">
-              <p>Whoosh! See a shooting star<br>
-              Whoops! You are not in your room anymore<br>
-              A black void sucked you in — maybe a lil black hole<br>
-              You look up at the wonder of the blue and green symphony of lights<br>
-              An ocean in the sky, a fragile curtain hung upside down, scaling the moonlit ice<br>
-              Reflecting the depths and vivid colors of your soul's midnights</p>
-              <p>Shall I compare thee to the aurora?<br>
-              Thou art the waves of the lights tainted crimson at the bottom edges like the fires of Hell<br>
-              Swinging and shimmering loosely with more grace than the most skillful dancer,<br>
-              Beckoning the stars to join in.</p>
-              <p>I felt your brilliance dance over me<br>
-              A guiding light as I sail into the night<br>
-              But few will see your spectacularity<br>
-              Because auroras only reveal themselves to the minds that wander<br>
-              I would like to count myself lucky to have glanced at your soul — free-spirited and noctifer.</p>
-              <p>Don't forget to look up<br>
-              Always look up<br>
-              Keep shining.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem" id="poem-kaleidoscope">
-            <summary><span class="p-num">v.</span><span class="p-title">Kaleidoscope, in three parts</span><span class="p-gloss">the heart, the mind, and the war between</span></summary>
-            <div class="poem-body">
-              <p class="part">Part 1</p>
-              <p>A house of mirrors full of reflections<br>
-              Contains a fragile, shining instrument of crystals and strings,<br>
-              Which can either weep or sing ballads of receptions.<br>
-              Splashed with colours of blue and blinded by lights,<br>
-              Stuck in a cage is hit with arrows of words used to create imagery.<br>
-              A throbbing of pulse and a tremble of strings,<br>
-              Fuels the instrument that creates numerous perceptions.<br>
-              The cogs and wheels start spinning, creating projections,<br>
-              Forming numerous realities on mirrors — or are they deceptions?</p>
-              <p class="part">Part 2</p>
-              <p>A battle breaks out between<br>
-              The instrument of strings<br>
-              And the machine of cogs and springs<br>
-              One siding with red (love) while the other with orange (warning)<br>
-              The out-turn of war isn't bought with peace<br>
-              And the pumping machine emerges victorious<br>
-              Breaking the lease.</p>
-              <p class="part">Part 3</p>
-              <p>The shining crystal takes the charge<br>
-              Forms astrifer delusions and mirage<br>
-              The cogs and wheels still spin, but are kept in blissful ignorance<br>
-              The crystal doesn't know it'll soon be tested for its endurance<br>
-              It plays its string when sent mixtapes of red<br>
-              It doesn't know that neglecting the circuit machine is a risky trade.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem" id="poem-society">
-            <summary><span class="p-num">vi.</span><span class="p-title">The Perks of Our Society</span><span class="p-gloss">on masks, armour, and the bravery of taking them off</span></summary>
-            <div class="poem-body">
-              <p>We live in a Society<br>
-              where people have shields<br>
-              and armours around them.<br>
-              They wear masks to hide themselves<br>
-              scared to reveal their true identities.<br>
-              They lock themselves up in their own<br>
-              prisons because they are<br>
-              Afraid to give more of them<br>
-              Afraid to show weaknesses of em<br>
-              Afraid of being played like a game.<br>
-              And sometimes afraid of getting healed.</p>
-              <p>We live in a Society.<br>
-              Where the emotions portrayed on the<br>
-              face are not always true.<br>
-              The leaves are not always green nor<br>
-              the violets always blue.<br>
-              Observe keenly, you will find<br>
-              secrets behind the smiles of people.<br>
-              The darkness, they conceal in their eyes.<br>
-              Never get fooled by<br>
-              how cheerful their shell seems.<br>
-              Deep down, they often have chaos<br>
-              in their seas.<br>
-              And their mind and heart are often at war.</p>
-              <p>They all have different stories<br>
-              But they would seem to fight the same war.<br>
-              The war to survive the fall (depression)<br>
-              The war to make the jump (anxiety)<br>
-              The war to find the light (sadness).</p>
-              <p>I sometimes wonder what would happen if<br>
-              They take off their shields &amp; armours<br>
-              They take off their masks<br>
-              And come out of their shells &amp; prisons.<br>
-              What if someone rescues them,<br>
-              offers a hand out of the war to provide Peace.<br>
-              Finds them in the deep abyss of vita Tartarus,<br>
-              Offers a place called Home.<br>
-              To flee with them from their prisons<br>
-              And shine a light in the maze.</p>
-              <p>Will they escape from the chaos<br>
-              of their minds, brokenness of their hearts?<br>
-              Or would they choose to stay in the<br>
-              fields of punishment they have made for themselves?<br>
-              Will they find a permanent home —<br>
-              a place of eternal peace and comfort —<br>
-              or would they choose to be wild<br>
-              hunters and gatherers fighting each day for survival?<br>
-              Will they accept the helping hand,<br>
-              a healer's help, who offers to heal them?<br>
-              Or would they choose to stay with<br>
-              the wrong person and live in pieces rather than peace?</p>
-              <p>Some people cease chaos in life<br>
-              while others long for peace.<br>
-              This is the society we live in —<br>
-              people never get confused in this maze.<br>
-              The bravery is in showcasing your<br>
-              true self, not in hiding behind a false face.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-        </div>
-
-        <div class="shelf">
-          <h3 class="shelf-h">stories &amp; worlds</h3>
-
-          <details class="poem prose" id="prose-dawn">
-            <summary><span class="p-num">vii.</span><span class="p-title">The Dawn</span><span class="p-gloss">flash fiction — a confession, almost made</span></summary>
-            <div class="poem-body">
-              <p>Late in the evening, as the sun goes down, he decides to let her know that he loves her.
-              He would tell her how much he cares about her — that she is his home of unconditional love and
-              comfort. He will tell her how she changed him for the better, and that it is because of her that
-              he bleeds words instead of blood.</p>
-              <p>He would tell her how just one smile from her makes his day survivable, how her eyes are always
-              honest with him, and how he finds his way through her light.</p>
-              <p>With hope in his eyes and enthusiasm in his heart, he went to her — only to find out that she
-              was never actually there. She was just an unfinished dream, one he had every night when sleep
-              embraced him.</p>
-              <p>With an ache in his heart, he decided that she was his destiny. And so, he closed his eyes,
-              drifting off into eternal sleep.</p>
-              <p>And this was the way he embraced his destiny.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem prose" id="prose-nocturne">
-            <summary><span class="p-num">viii.</span><span class="p-title">Nocturne Notes</span><span class="p-gloss">a world where music has magical properties</span></summary>
-            <div class="poem-body">
-              <p>The elevator door opened to the third level, a floor that I seldom visited. But hold on — I forgot
-              to introduce myself. I am Tanner Slate, and this is Harmonia Nocturne, a place where music possesses
-              magical powers at night. Now, you must be thinking music feels magical on Earth too at night (when
-              I am inebriated). Haha — except music can even eviscerate here. But there's no need to be scared;
-              it only happens if you stumble upon Chord Shadow Bazaar. We'll talk about that later.</p>
-              <p>In my city, we are divided into four clans. The <strong>Chordians</strong> — string players — create melodies
-              that evoke strong emotions, using the resonant qualities of their instruments to influence the
-              environment and people's moods. The <strong>Harmonixies</strong> — key players — are masters of harmony and
-              rhythm, weaving soundscapes that heal, calm, or energize: they are the doctors. The <strong>Aeronates</strong> —
-              wind players — craft powerful solos and uplifting tunes, manipulating air and breath to bring
-              vitality and motion to my world: they command the wind and waves. And the <strong>Rythmatists</strong> —
-              percussionists — control the beats and tempo, keeping every other harmony synchronized. They play
-              the role of Hestia, our goddess of the hearth.</p>
-              <p>Our world is mapped like a Ludo board, the four clans holding each corner with the Crescendo
-              Court Hotel in the centre — a cardinal hall where all the clans gather to create harmonies and go
-              about their work. But here's the fun part: only the senior council members work, while we teens do
-              a very creative job. We are given Spotify playlists of humans from Earth, and our task is to choose
-              one and bring it to life with our music — to give it a personality. That is where the people of
-              Harmonia Nocturne come from. Who knows — there might be an Aeronate or a Chordian out there who is
-              the personified form of <em>your</em> playlist.</p>
-              <p>Let's break the suspense of Chord Shadow Bazaar now: it is a tenebrous black market where one can
-              trade major and minor chords. You must be thinking that is ludicrous, Tanner — a trade of chords?
-              How is that dangerous in any sense? Well, in our world, major and minor chords regulate a person's
-              mood — and worse, they can intoxicate. The Bazaar is run by haughty Chordians and Harmonixies who
-              believe their clans superior, and that they should dominate.</p>
-              <p><em>* alarm bells ring *</em></p>
-              <p>So let's wrap it up here today — I am getting late for my Curation Class. I'll see you guys later.</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-
-          <details class="poem prose" id="prose-neonweaver">
-            <summary><span class="p-num">ix.</span><span class="p-title">The Neon Weaver's Quest</span><span class="p-gloss">a short story about magic, and confessing</span></summary>
-            <div class="poem-body">
-              <p>Tanner Slate was the youngest magician in Arcanovia, known for his exceptional talent and youthful
-              charm. Nicknamed <em>Neon Weaver</em> for his ability to animate objects through his glowing sign designs,
-              Tanner sported straight, sun-kissed blonde locks and a sleek black obsidian bracelet with an emerald
-              at its centre.</p>
-              <p>Arcanovia is where magic first came into existence, yet not everyone possessed it. Eventually,
-              fewer people were born with it, and the gifted began to live ordinary lives. Magicians were reduced
-              to party entertainers, performing quirky tricks at birthdays and weddings. Tanner's vibrant magic
-              made him a favorite among the city's children — though he felt destined for something greater.</p>
-              <p>In the stillness of an afternoon, a mysterious letter arrived, exuding an otherworldly aura in
-              elegant, regal handwriting: an invitation to perform at an enigmatic castle by the sea. Expecting
-              another mundane performance, he reluctantly agreed, though curiosity tugged at his thoughts.</p>
-              <p>The castle's grand doors swung open with an eerie creak and closed behind him with a resounding
-              thud. "Hello? Is anyone there?" Pressing the emerald on his bracelet, he summoned a glowing pen and
-              sketched a lamp, which materialized in his hand, casting light into the shadows.</p>
-              <p>"Welcome to Stellician Palace," a voice boomed. "I am Cybele Shadow, the curator of mysteries
-              within these walls. You have been chosen, young Weaver, to solve a mystery of utmost importance.
-              You must find the one who holds the stars in their grasp, and the weaver of words. The one who
-              understands the cosmos, and the one who crafts verses."</p>
-              <p>Two portals stood before him, adorned with intricate runes. Through the first he stepped into a
-              cosmic realm of nebulae and shimmering stars, and found Stella — an astrophysicist, and his first
-              love — studying star charts with furrowed brows, trying to save a dying star on the brink of
-              supernova. Together they navigated treacherous asteroid fields, seeking rare cosmic elements;
-              Tanner wove neon shields to guide them through peril, and marveled at how vast the universe was,
-              and how much he still felt for her. Just as the star steadied, the portal pulled him back.</p>
-              <p>The final portal led to a realm where words came to life. A tall, jet-black-haired man stood
-              wielding a pen like Tanner's own, its tip a hologram of a majestic phoenix — Mistico, a talented
-              poet, and the other person he had secretly loved. Together they deciphered cryptic verses and
-              confronted the rogue bard who used poems for dark magic, dodging hostile verses and harnessing the
-              power of the good ones. Through Mistico's work, Tanner saw his soul.</p>
-              <p>Back at the palace, Cybele stood holding Stella's telescope and Mistico's pen — without which
-              both would eventually disintegrate. "One final challenge awaits. You must confess your feelings to
-              Stella and Mistico, risking vulnerability and rejection. Only then will they be truly free."</p>
-              <p>Tanner stood there, dumbfounded. He had always run away when feelings became unbearable.
-              "Why are you doing this?" he asked angrily.</p>
-              <p>"Because," Cybele replied, her voice softening, "the greatest magic is love. You must show them
-              your true heart to break the spell."</p>
-              <p>He took a deep breath. "Stella, Mistico — I love you both. I've been a coward, hiding my
-              feelings, afraid of rejection. But I can't let fear control me anymore."</p>
-              <p>Tears welled in Stella's eyes. "Oh, Tanner — I've always loved you too." Mistico's intense gaze
-              softened. "I've felt the same way. I just didn't know how to tell you."</p>
-              <p>As Tanner embraced them both, a brilliant light filled the room, and the castle's enchantments
-              dissolved. Cybele smiled warmly. "Well done, Neon Weaver. You have unlocked the true power of
-              your magic."</p>
-              <p class="sig">— T.R.</p>
-            </div>
-          </details>
-        </div>
-      </div>
-
-      <p class="library-out">The essays — film, psychology, and the mind — live on
-      <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">Substack ↗</a>, where the film diary of this whole build is written weekly.</p>
-
-      <a class="next-room" href="#about" data-open="about"><small>back round to</small>the window →</a>
-    </div>
-  </section>
-
-</main>
-
-<!-- ═══════════════ SCREEN (film modal) ═══════════════ -->
-<div id="screen" class="modal" role="dialog" aria-modal="true" aria-labelledby="screen-title" hidden>
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
   <div class="modal-scrim" data-dismiss></div>
-  <div class="modal-box">
+  <div class="modal-box glass">
     <button class="modal-x" type="button" data-dismiss aria-label="Close">✕</button>
-    <div class="screen-video"></div>
-    <div class="screen-info">
-      <p class="screen-meta"></p>
-      <h3 id="screen-title"></h3>
-      <p class="screen-log"></p>
-      <div class="screen-more"></div>
-    </div>
+    <div class="modal-media"></div>
+    <div class="modal-info"><p class="modal-meta"></p><h3 id="modal-title"></h3><div class="modal-body"></div></div>
+    <div class="modal-nav" hidden><button type="button" class="modal-prev" aria-label="Previous">←</button><button type="button" class="modal-next" aria-label="Next">→</button></div>
   </div>
 </div>
 
-<!-- ═══════════════ READER (poem modal) ═══════════════ -->
-<div id="reader" class="modal" role="dialog" aria-modal="true" aria-labelledby="reader-title" hidden>
-  <div class="modal-scrim" data-dismiss></div>
-  <div class="book">
-    <button class="modal-x" type="button" data-dismiss aria-label="Close">✕</button>
-    <div class="book-page">
-      <p class="book-num"></p>
-      <h3 id="reader-title"></h3>
-      <p class="book-gloss"></p>
-      <div class="book-body"></div>
-    </div>
-    <div class="book-nav"><button type="button" class="book-prev">← previous</button><button type="button" class="book-next">next →</button></div>
-  </div>
-</div>
-
-<nav id="flatnav" aria-label="Sections">
-  <a href="#about" data-open="about">about</a>
-  <a href="#films" data-open="films">films</a>
-  <a href="#lab" data-open="lab">lab</a>
-  <a href="#library" data-open="library">library</a>
-</nav>
-
-<img class="fi-preview" id="fi-preview" alt="" aria-hidden="true">
+<div id="cursor" aria-hidden="true"><span></span></div>
 <div id="grain" aria-hidden="true"></div>
+<noscript><div class="noscript">This portfolio is an explorable world and needs JavaScript. Tanisha Parhi — writer, building films with AI · <a href="https://tanishaparhi.substack.com">Substack</a> · <a href="mailto:rainaparhi@gmail.com">rainaparhi@gmail.com</a></div></noscript>
 
-<script src="app.js?v=7" defer></script>
-<script type="module" src="room.js?v=7"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="data.js?v=23"></script>
+<script src="app.js?v=23"></script>
+<script type="module" src="js/main.js?v=23"></script>
 </body>
 </html>
