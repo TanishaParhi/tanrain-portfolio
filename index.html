@@ -2,372 +2,394 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TanRain — a house at blue hour · Tanisha Parhi</title>
-<meta name="description" content="The explorable portfolio of Tanisha Parhi (TanRain) — AI films in progress, experiments from the lab, and creative writing. A navigable house at blue hour.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B1B3A'/%3E%3Ccircle cx='16' cy='14' r='6' fill='none' stroke='%23B8893D' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='14' r='2' fill='%23B8893D'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TanRain — Tanisha Parhi</title>
+<meta name="description" content="The portfolio of Tanisha Parhi (TanRain): a small room at blue hour, floating on still water. AI films on the screen, experiments on the desk, poems on the shelf.">
+<meta property="og:title" content="TanRain — Tanisha Parhi">
+<meta property="og:description" content="A small room at blue hour. AI films on the screen, experiments on the desk, poems on the shelf.">
+<meta property="og:image" content="assets/img/v-stars.jpg">
+<meta name="theme-color" content="#0B1B3A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1B3A'/%3E%3Cpath d='M9 22h14M11 22V12l5-4 5 4v10' fill='none' stroke='%23D6A85C' stroke-width='1.6'/%3E%3Crect x='14' y='15' width='4' height='4' fill='%23D6A85C'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
-<noscript><style>#veil{display:none!important}.door,#map{display:none!important}</style></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Special+Elite&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=7">
+<noscript><style>#veil,#room,.hotspots,.room-hint,#menu-btn,#menu,.back,.next-room{display:none!important}body{overflow:auto!important}.panel{position:static!important;visibility:visible!important;clip-path:none!important;overflow:visible!important;height:auto!important}</style></noscript>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
 </head>
 <body>
 
-<!-- ===================== INTRO VEIL ===================== -->
+<div id="sky" aria-hidden="true"><div class="stars s1"></div><div class="stars s2"></div><div class="horizon"></div></div>
+
+<!-- ═══════════════ VEIL ═══════════════ -->
 <div id="veil" role="dialog" aria-label="Welcome">
   <div class="veil-inner">
-    <svg class="veil-hand" viewBox="0 0 200 140" aria-hidden="true">
-      <defs>
-        <radialGradient id="orbg">
-          <stop offset="0%" stop-color="#D6A85C" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#D6A85C" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <circle class="orb-glow" cx="100" cy="58" r="36" fill="url(#orbg)"/>
-      <circle class="orb" cx="100" cy="58" r="4.5"/>
-      <path class="hand-line" d="M52,96 C60,112 78,122 100,122 C122,122 140,112 148,96"/>
-      <path class="hand-line hand-faint" d="M64,92 C72,104 84,110 100,110 C116,110 128,104 136,92"/>
-    </svg>
-    <p class="veil-kicker">Tanisha Parhi · writer, building films</p>
-    <h1 class="veil-title">TANRAIN</h1>
-    <p class="veil-sub">a house at blue hour — films in one room, experiments in another,<br>and the writing that started everything</p>
-    <button id="enter-btn" type="button">enter the house</button>
-    <p class="veil-hint">rooms open to arrow keys &amp; the map in the corner</p>
+    <p class="veil-kicker"><span class="dot"></span>TANISHA PARHI — writer, building films</p>
+    <h1 class="veil-title">TanRain</h1>
+    <p class="veil-sub">a small room at blue hour, floating on still water.<br>
+    the films are on the screen, the experiments are on the desk,<br class="wide-only"> the poems are on the shelf.</p>
+    <div class="veil-load" aria-live="polite"><span class="veil-bar"><i></i></span><span class="veil-pct">lighting the lamp…</span></div>
+    <div class="veil-actions" hidden>
+      <button id="enter-btn" type="button">enter the room</button>
+      <button id="enter-sound" type="button" class="linklike">enter with rain on ♪</button>
+    </div>
+    <a class="veil-simple" href="?flat">or read the simple version →</a>
   </div>
 </div>
 
-<!-- ===================== PARALLAX SKY ===================== -->
-<div id="sky" aria-hidden="true">
-  <div class="stars stars-a"></div>
-  <div class="stars stars-b"></div>
+<!-- ═══════════════ THE ROOM (3D) ═══════════════ -->
+<div id="room" aria-hidden="true"><canvas id="room-canvas"></canvas></div>
+<div class="hotspots" id="hotspots">
+  <button class="hotspot" type="button" data-open="films" style="--r:-3deg"><b>the screening room</b><i>my films</i></button>
+  <button class="hotspot" type="button" data-open="library" style="--r:2.5deg"><b>the library</b><i>poems &amp; stories</i></button>
+  <button class="hotspot" type="button" data-open="lab" style="--r:-2deg"><b>the lab</b><i>experiments</i></button>
+  <button class="hotspot" type="button" data-open="about" style="--r:3deg"><b>the window</b><i>about me</i></button>
 </div>
+<p class="room-hint"><span>drag to look around</span> · <span>click anything that glows</span></p>
 
-<!-- ===================== THE HOUSE ===================== -->
-<main id="house">
-  <div id="world">
+<!-- ═══════════════ HUD ═══════════════ -->
+<header id="hud">
+  <a class="brand" href="#" data-close>
+    <span class="dot"></span><span class="brand-name">TANISHA PARHI</span><span class="brand-sub">tanrain</span>
+  </a>
+  <div class="hud-right">
+    <a class="pill" href="mailto:rainaparhi@gmail.com">WORK WITH ME ↗</a>
+    <button class="icon-btn" id="sound-btn" type="button" aria-pressed="false" aria-label="Rain sound">
+      <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none"/></svg>
+      <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6" fill="none"/></svg>
+    </button>
+    <button class="icon-btn" id="night-btn" type="button" aria-pressed="false" aria-label="Midnight">
+      <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17h18M6 17a6 6 0 0 1 12 0" fill="none"/><path d="M12 5v3M5 9l2 2M19 9l-2 2" fill="none"/></svg>
+    </button>
+  </div>
+</header>
 
-    <!-- ============ ROOM · ENTRY HALL ============ -->
-    <section class="room" id="hall" data-pos="0,0" aria-label="Entry hall — about">
-      <div class="room-inner">
-        <header class="hall-head">
-          <p class="kicker">entry hall</p>
-          <h2 class="big-title">TANRAIN</h2>
-          <p class="hall-tag">Tanisha Parhi — I write essays about film and the mind.<br class="wide-only">
-          Now I'm teaching myself to make the films, with AI — and leaving the failure in the shot.</p>
-        </header>
+<button id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu"><span></span><span></span></button>
+<nav id="menu" aria-label="Rooms">
+  <a href="#" data-close class="m-room">↺ back to the room</a>
+  <a href="#about" data-open="about"><em>01</em><span>the window</span><small>about me</small></a>
+  <a href="#films" data-open="films"><em>02</em><span>the screening room</span><small>films</small></a>
+  <a href="#lab" data-open="lab"><em>03</em><span>the lab</span><small>experiments</small></a>
+  <a href="#library" data-open="library"><em>04</em><span>the library</span><small>writing</small></a>
+  <div class="menu-foot">
+    <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">substack ↗</a>
+    <a href="https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/" target="_blank" rel="noopener">linkedin ↗</a>
+    <a href="https://www.instagram.com/taniverse.tm/" target="_blank" rel="noopener">instagram ↗</a>
+    <a href="?flat">simple version</a>
+  </div>
+</nav>
 
-        <div class="hall-body">
-          <div class="hall-bio">
-            <p>I related to a man who wished his plane would crash. It took me an entire essay — through Fincher's
-            direction, the psychology of dissociation, and my own carefully maintained routines — to understand why.
-            That is how I read films: one movie, several lenses at once. Psychology, cinematography, philosophy,
-            and the admission I'd rather leave out.</p>
-            <p>This year, writing about films stopped being enough. I'm making them — with AI tools, a laptop,
-            and no crew. I don't have a festival laurel yet. What I have is the build: the shot that took forty
-            generations, the character whose face wouldn't hold across two scenes, and a house with three rooms
-            where all of it lives.</p>
+<main id="panels">
+
+  <!-- ═══════════ 01 · THE WINDOW — ABOUT ═══════════ -->
+  <section class="panel p-about" id="about" aria-label="About">
+    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">01 · the window</span></div>
+    <div class="p-wrap">
+      <p class="kicker"><span class="dot"></span>the window — about</p>
+
+      <h2 class="manifesto" id="manifesto">I write about <span class="inl"><img src="assets/img/v-mishen.jpg" alt=""></span> <em>film</em> and <em>the mind.</em> Now I'm learning to make <span class="inl"><img src="assets/img/contingency-3.jpg" alt=""></span> them — with <em>machines,</em> <span class="inl wide"><img src="assets/img/v-stars.jpg" alt=""></span> and with the <em>failure</em> left in the shot.</h2>
+
+      <div class="about-grid">
+        <figure class="tape-photo" style="--r:-3deg">
+          <img src="assets/img/v-poet.jpg" alt="Tanisha Parhi, looking down at a notebook" loading="lazy">
+          <figcaption>me, mid-take — from the poet intro</figcaption>
+        </figure>
+        <div class="about-copy">
+          <p class="lede">I related to a man who wished his plane would crash. It took me an entire essay — through
+          Fincher's direction, the psychology of dissociation, and my own carefully maintained routines — to understand why.</p>
+          <p>That is how I read films: one movie, several lenses at once. Psychology, cinematography, philosophy, and the
+          admission I'd rather leave out. This year, writing about films stopped being enough. I'm making them — with AI
+          tools, a laptop, and no crew.</p>
+          <p>I'm not arrived. I'm building. What I have is the build itself: the shot that took forty generations, the
+          character whose face wouldn't hold across two scenes, and this small room where all of it lives.</p>
+          <span class="sticker" style="--r:-5deg">AVAILABLE FOR COLLABS</span>
+        </div>
+        <aside class="now">
+          <p class="now-label">latest film</p>
+          <p class="now-title">Anamne Booth</p>
+          <p class="now-meta">a magical-realist memory drama — a promise kept too late, and a photo booth that remembers</p>
+          <a class="now-go" href="#films" data-open="films" data-film="film-anamne">watch it in the screening room →</a>
+        </aside>
+      </div>
+
+      <ul class="elsewhere">
+        <li><a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener"><b>Substack</b><span>essays &amp; the film diary</span></a></li>
+        <li><a href="https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/" target="_blank" rel="noopener"><b>LinkedIn</b><span>the professional room</span></a></li>
+        <li><a href="https://www.instagram.com/taniverse.tm/" target="_blank" rel="noopener"><b>Instagram</b><span>@taniverse.tm</span></a></li>
+        <li><a href="mailto:rainaparhi@gmail.com"><b>Email</b><span>rainaparhi@gmail.com</span></a></li>
+      </ul>
+
+      <a class="next-room" href="#films" data-open="films"><small>next room</small>the screening room →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 · THE SCREENING ROOM — FILMS ═══════════ -->
+  <section class="panel p-films" id="films" aria-label="Films">
+    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">02 · the screening room</span></div>
+    <div class="p-wrap">
+      <header class="films-hero">
+        <p class="kicker"><span class="dot"></span>the screening room</p>
+        <h2 class="display">FILMS</h2>
+        <div class="fan" aria-hidden="true">
+          <img src="assets/img/v-kalaagni.jpg" alt="" style="--i:0">
+          <img src="assets/img/v-welcome.jpg" alt="" style="--i:1">
+          <img src="assets/img/contingency-1.jpg" alt="" style="--i:2">
+          <img src="assets/img/v-stars.jpg" alt="" style="--i:3">
+          <img src="assets/img/ninth-1.jpg" alt="" style="--i:4">
+        </div>
+        <p class="display-sub">IN ORDER<br>OF BECOMING</p>
+        <p class="tools"><b>MADE WITH</b> midjourney · veo 3 · kling · higgsfield · seedream · nano banana · freepik</p>
+      </header>
+
+      <div class="coverflow" id="coverflow" aria-roledescription="carousel" aria-label="Films carousel">
+        <div class="cf-stage"><div class="cf-track"></div></div>
+        <div class="cf-ui">
+          <button class="cf-btn cf-prev" type="button" aria-label="Previous film">←</button>
+          <span class="cf-pill" aria-live="polite"></span>
+          <button class="cf-btn cf-next" type="button" aria-label="Next film">→</button>
+        </div>
+        <p class="cf-hint">drag, use the arrows, or click the centre card to watch</p>
+      </div>
+
+      <div class="film-index" id="film-index" aria-label="All films"></div>
+
+      <div class="film-list">
+
+        <article class="film" id="film-anamne" data-title="Anamne Booth" data-year="2026" data-yy="26" data-kind="magical-realist memory drama · ~5 min" data-label="memory drama" data-status="new cut" data-img="assets/img/contingency-1.jpg" data-drive="1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ">
+          <img class="film-img" src="assets/img/contingency-1.jpg" alt="Anamne Booth — a photo booth shop full of hanging prints, lit gold" loading="lazy">
+          <h3>Anamne Booth</h3>
+          <p class="meta">new cut — 2026 — magical-realist memory drama · ~5 min</p>
+          <p class="logline">On the day she finally keeps a promise, a young woman steps into a photo booth that remembers more than she does — and the person beside her may never have truly been there.</p>
+          <div class="film-more">
+            <p class="dnote">“I have always been afraid of forgetting. Photographs are the one place where the people we lose keep their faces — creased, fading, but still ours.” <em>— from the director's note</em></p>
+            <p class="frame-label">project: Contingency — the watermarked cut, August 2026</p>
+            <div class="stillstrip">
+              <img src="assets/img/v-contingency-wm.jpg" alt="Anamne Booth still — walking down a sunlit old street" loading="lazy">
+              <img src="assets/img/contingency-2.jpg" alt="Anamne Booth still" loading="lazy">
+              <img src="assets/img/contingency-3.jpg" alt="Anamne Booth still" loading="lazy">
+              <img src="assets/img/contingency-4.jpg" alt="Anamne Booth still" loading="lazy">
+            </div>
+            <a class="ext" href="https://canva.link/f79h4ubv8shb9db" target="_blank" rel="noopener">moodboard + storyboard ↗</a>
+            <a class="ext" href="https://drive.google.com/file/d/1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ/view" target="_blank" rel="noopener">open the film on Drive ↗</a>
           </div>
+          <details class="watch"><summary>watch the film</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1461poQ3tKtIGtT2aRyPyY-6BwedE21YZ/preview" title="Anamne Booth" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
 
-          <aside class="now-playing">
-            <p class="np-label">now in production</p>
-            <p class="np-title">Anamne Booth</p>
-            <p class="np-meta">a magical-realist memory drama · 60% complete</p>
-            <div class="np-bar"><span style="width:60%"></span></div>
-            <a class="np-go" href="#films" data-goto="films">step into the screening room →</a>
-          </aside>
-        </div>
-
-        <nav class="hall-links" aria-label="Elsewhere">
-          <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">Substack — the essays &amp; film diary ↗</a>
-          <a href="https://www.linkedin.com/in/tanisha-parhi-a6a8a1275/" target="_blank" rel="noopener">LinkedIn ↗</a>
-          <a href="https://www.instagram.com/taniverse.tm/" target="_blank" rel="noopener">Instagram ↗</a>
-          <a href="mailto:rainaparhi@gmail.com">rainaparhi@gmail.com</a>
-        </nav>
-      </div>
-
-    </section>
-
-    <!-- ============ ROOM · SCREENING ROOM ============ -->
-    <section class="room" id="films" data-pos="1,0" aria-label="The screening room — AI films">
-      <div class="room-inner">
-        <header class="room-head">
-          <p class="kicker">the screening room</p>
-          <h2>Films, in order of becoming</h2>
-          <p class="room-note">Everything here was made with AI tools and stubbornness — the newest work first,
-          the earliest experiment last, so you can watch the hand steady.</p>
-        </header>
-
-        <div class="films-grid">
-
-          <article class="film" id="film-anamne">
-            <figure class="poster">
-              <img src="assets/img/contingency-1.jpg" alt="Still from Anamne Booth — a photo booth glowing warm in a blue evening street" loading="lazy">
-              <figcaption class="poster-cap">frame from production</figcaption>
-            </figure>
-            <div class="film-head">
-              <h3>Anamne Booth</h3>
-              <p class="meta"><span class="status prod">in production · 60%</span> 2026 · magical-realist memory drama · ~5 min</p>
-            </div>
-            <p class="logline">On the day she finally keeps a promise, a young woman steps into a photo booth that
-            remembers more than she does — and the person beside her may never have truly been there.</p>
-            <details class="reveal">
-              <summary>enter the booth — draft &amp; stills</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1L1HA4O2kbq-nJ30LATnYGhn0OAHUKu_R/preview" title="Anamne Booth — draft one" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <p class="frame-label">draft one — unfinished on purpose; this is the build, not the premiere</p>
-                <p class="dnote">“I have always been afraid of forgetting. Photographs are the one place where the
-                people we lose keep their faces — creased, fading, but still ours.” <em>— from the director's note</em></p>
-                <div class="stillstrip">
-                  <img src="assets/img/contingency-2.jpg" alt="Anamne Booth still — hanging film strips inside the shop" loading="lazy">
-                  <img src="assets/img/contingency-3.jpg" alt="Anamne Booth still — a curtain breathing in an open window" loading="lazy">
-                  <img src="assets/img/contingency-4.jpg" alt="Anamne Booth still — the photo strip develops" loading="lazy">
-                </div>
-                <a class="ext" href="https://drive.google.com/file/d/1L1HA4O2kbq-nJ30LATnYGhn0OAHUKu_R/view" target="_blank" rel="noopener">open the draft on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-paralian">
-            <div class="poster poster-typo poster-sea" aria-hidden="true">
-              <span class="pt-title">PARALIAN</span>
-              <span class="pt-sub">withheld, then released</span>
-            </div>
-            <div class="film-head">
-              <h3>Paralian</h3>
-              <p class="meta"><span class="status dev">in development</span> two-episode short · 2.39:1 anamorphic</p>
-            </div>
-            <p class="logline">A man sheds every false thing that ever held him — and is granted the one freedom
-            that forecloses the only thing he needs. The ocean gives him exactly what he asks for. That is the tragedy.</p>
-            <details class="reveal">
-              <summary>read the shape of it</summary>
-              <div class="reveal-body">
-                <p class="dnote">Episode One, <em>The Coronation</em>, is delivered in design — city, forest, ocean,
-                each with its own locked palette. Episode Two, <em>The Losing of the Shadows</em>, is being written.
-                No frames are public yet; this room believes in withholding.</p>
-                <p class="frame-label">five symbols carry the film: a shadow · books · a crown of gaps · a prism · hawks</p>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-mishen">
-            <div class="poster poster-typo" aria-hidden="true">
-              <span class="pt-title">MISHEN</span>
-              <span class="pt-sub">series — trailer</span>
-            </div>
-            <div class="film-head">
-              <h3>Mishen — trailer</h3>
-              <p class="meta"><span class="status done">cut</span> January 2026 · series pitch trailer</p>
-            </div>
-            <p class="logline">The trailer for a series still finding its final form — cut to prove the world could hold.</p>
-            <details class="reveal">
-              <summary>roll the trailer</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/preview" title="Mishen trailer" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <a class="ext" href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener">Mishen moodboard ↗</a>
-                <a class="ext" href="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/view" target="_blank" rel="noopener">open on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-welcome">
-            <div class="poster poster-typo" aria-hidden="true">
-              <span class="pt-title">WELCOME<br>2026</span>
-              <span class="pt-sub">a new-year film</span>
-            </div>
-            <div class="film-head">
-              <h3>Welcome 2026</h3>
-              <p class="meta"><span class="status done">finished</span> January 2026 · short</p>
-            </div>
-            <p class="logline">A small film made to open a year — the first cut finished in the first week of January.</p>
-            <details class="reveal">
-              <summary>watch</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/preview" title="Welcome 2026" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <a class="ext" href="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/view" target="_blank" rel="noopener">open on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-touchstars">
-            <div class="poster poster-typo poster-night" aria-hidden="true">
-              <span class="pt-title">TOUCH<br>THE STARS</span>
-              <span class="pt-sub">december 2025</span>
-            </div>
-            <div class="film-head">
-              <h3>Touch the Stars</h3>
-              <p class="meta"><span class="status done">finished</span> December 2025 · short</p>
-            </div>
-            <p class="logline">Made in the month of long nights — a film about reaching for something that only
-            reveals itself to minds that wander.</p>
-            <details class="reveal">
-              <summary>watch</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/preview" title="Touch the Stars" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <a class="ext" href="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/view" target="_blank" rel="noopener">open on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-kalaagni">
-            <div class="poster poster-typo poster-ember" aria-hidden="true">
-              <span class="pt-title">KALA<br>AGNI</span>
-              <span class="pt-sub">black fire</span>
-            </div>
-            <div class="film-head">
-              <h3>Kala Agni</h3>
-              <p class="meta"><span class="status done">finished</span> October 2025 · short</p>
-            </div>
-            <p class="logline">An early film, scripted and storyboarded before a single frame was generated —
-            where the discipline started.</p>
-            <details class="reveal">
-              <summary>watch</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/preview" title="Kala Agni" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <a class="ext" href="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/view" target="_blank" rel="noopener">open on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-          <article class="film" id="film-ninth">
-            <figure class="poster">
-              <img src="assets/img/ninth-1.jpg" alt="Still from The 9th Revolution — a figure in a dark corridor" loading="lazy">
-              <figcaption class="poster-cap">frame from the film</figcaption>
-            </figure>
-            <div class="film-head">
-              <h3>The 9th Revolution</h3>
-              <p class="meta"><span class="status done">finished</span> September 2025 · AI horror short</p>
-            </div>
-            <p class="logline">The first real film — a horror short, because fear is the easiest emotion to test
-            a new medium against and the hardest one to fake.</p>
-            <details class="reveal">
-              <summary>watch the film — final cut &amp; frames</summary>
-              <div class="reveal-body">
-                <div class="video-frame">
-                  <iframe data-src="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/preview" title="The 9th Revolution — final cut" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <div class="stillstrip">
-                  <img src="assets/img/ninth-2.jpg" alt="The 9th Revolution — character study frame" loading="lazy">
-                  <img src="assets/img/ninth-3.jpg" alt="The 9th Revolution — atmosphere frame" loading="lazy">
-                </div>
-                <a class="ext" href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener">the storyboard ↗</a>
-                <a class="ext" href="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/view" target="_blank" rel="noopener">open on Drive ↗</a>
-              </div>
-            </details>
-          </article>
-
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ============ ROOM · THE LAB ============ -->
-    <section class="room" id="lab" data-pos="0,1" aria-label="The lab — experiments">
-      <div class="room-inner">
-        <header class="room-head">
-          <p class="kicker">the lab</p>
-          <h2>Experiments, tool fights &amp; dead ends</h2>
-          <p class="room-note">Nothing in this room is finished, and that's the point. This is where the tools get
-          interrogated — what the demo promised, what actually happened.</p>
-        </header>
-
-        <div class="lab-wall">
-          <h3 class="lab-h">the wall of forty generations</h3>
-          <p class="lab-sub">image tests from <em>The 9th Revolution</em> — Seedream 4.0 &amp; Nano Banana, October 2025.
-          The face wouldn't stay the same. These are the versions that almost made it.</p>
-          <div class="polaroids">
-            <figure class="polaroid" style="--tilt:-3deg"><img src="assets/img/ninth-2.jpg" alt="Character generation test 1" loading="lazy"><figcaption>take 11 — wrong eyes</figcaption></figure>
-            <figure class="polaroid" style="--tilt:2deg"><img src="assets/img/ninth-4.jpg" alt="Character generation test 2" loading="lazy"><figcaption>take 19 — almost her</figcaption></figure>
-            <figure class="polaroid" style="--tilt:-1.5deg"><img src="assets/img/ninth-5.jpg" alt="Character generation test 3" loading="lazy"><figcaption>take 23 — kept the light</figcaption></figure>
-            <figure class="polaroid" style="--tilt:3deg"><img src="assets/img/ninth-6.jpg" alt="Character generation test 4" loading="lazy"><figcaption>take 31 — the one</figcaption></figure>
+        <article class="film" id="film-paralian" data-title="Paralian" data-year="in development" data-yy="26" data-kind="two-episode short · 2.39:1" data-label="the sea" data-status="in development">
+          <h3>Paralian</h3>
+          <p class="meta">in development — two-episode short · 2.39:1 anamorphic</p>
+          <p class="logline">A man sheds every false thing that ever held him — and is granted the one freedom that forecloses the only thing he needs. The ocean gives him exactly what he asks for.</p>
+          <div class="film-more">
+            <p class="dnote">Episode One, <em>The Coronation</em>, is delivered in design — city, forest, ocean, each with its own locked palette. Episode Two, <em>The Losing of the Shadows</em>, is being written. No frames are public yet; this film believes in withholding.</p>
+            <p class="frame-label">five symbols carry it: a shadow · books · a crown of gaps · a prism · hawks</p>
           </div>
-        </div>
+        </article>
 
-        <div class="lab-log">
-          <h3 class="lab-h">experiment log</h3>
+        <article class="film" id="film-mishen" data-title="Mishen" data-year="Jan 2026" data-yy="26" data-kind="series · pitch trailer" data-label="series trailer" data-status="cut" data-img="assets/img/v-mishen.jpg" data-drive="1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t">
+          <img class="film-img" src="assets/img/v-mishen.jpg" alt="Mishen — a dancing bronze figure in a violet temple garden" loading="lazy">
+          <h3>Mishen — trailer</h3>
+          <p class="meta">cut — January 2026 — series pitch trailer</p>
+          <p class="logline">The trailer for a series still finding its final form — cut to prove the world could hold.</p>
+          <div class="film-more">
+            <a class="ext" href="https://canva.link/pro2id65dp9m3k0" target="_blank" rel="noopener">series pitch deck ↗</a>
+            <a class="ext" href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener">moodboard ↗</a>
+            <a class="ext" href="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/view" target="_blank" rel="noopener">open on Drive ↗</a>
+          </div>
+          <details class="watch"><summary>roll the trailer</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1Pgqo7_BAJ9uuAeNLiX8BIVXvSwmPvH_t/preview" title="Mishen trailer" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
 
-          <details class="exp" id="exp-gozero">
-            <summary><span class="exp-date">nov 2025</span> Go Zero — concept ad <span class="exp-tag">commercial test</span></summary>
-            <div class="reveal-body">
-              <p class="dnote">Could the tools hold a brand's product steady for thirty seconds? A concept ad
-              for an ice-cream brand, made to find out.</p>
-              <div class="video-frame">
-                <iframe data-src="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/preview" title="Go Zero concept ad" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <a class="ext" href="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/view" target="_blank" rel="noopener">open on Drive ↗</a>
+        <article class="film" id="film-welcome" data-title="Welcome 2026" data-year="Jan 2026" data-yy="26" data-kind="short" data-label="new year" data-status="finished" data-img="assets/img/v-welcome.jpg" data-drive="1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema">
+          <img class="film-img" src="assets/img/v-welcome.jpg" alt="Welcome 2026 — a woman asleep in dappled light among flowers" loading="lazy">
+          <h3>Welcome 2026</h3>
+          <p class="meta">finished — January 2026 — short</p>
+          <p class="logline">A short made to open the year.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1xg1Gh-RNGWVJ0b1etKS5ch7s2cm73ema/preview" title="Welcome 2026" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+
+        <article class="film" id="film-stars" data-title="Touch the Stars" data-year="Dec 2025" data-yy="25" data-kind="short" data-label="night sky" data-status="finished" data-img="assets/img/v-stars.jpg" data-drive="1OiI4mUARxDNLercmMdoQojhdUtnSImNx">
+          <img class="film-img" src="assets/img/v-stars.jpg" alt="Touch the Stars — a small child in a field reaching up at a sky full of stars" loading="lazy">
+          <h3>Touch the Stars</h3>
+          <p class="meta">finished — December 2025 — short</p>
+          <p class="logline">A child, a field, a sky full of stars — and a reach.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1OiI4mUARxDNLercmMdoQojhdUtnSImNx/preview" title="Touch the Stars" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+
+        <article class="film" id="film-kalaagni" data-title="Kala Agni" data-year="Oct 2025" data-yy="25" data-kind="60-second film · Midjourney &amp; Veo 3" data-label="the fire of art" data-status="finished" data-img="assets/img/v-kalaagni.jpg" data-drive="1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ">
+          <img class="film-img" src="assets/img/v-kalaagni.jpg" alt="Kala Agni — a hand in lace sleeves reaching for a vintage radio on a patterned carpet" loading="lazy">
+          <h3>Kala Agni</h3>
+          <p class="meta">finished — October 2025 — 60-second film</p>
+          <p class="logline">The fire of art: a single flame passed from the rock paintings of Bhimbetka, through Chola bronzes and Mughal miniatures, into modern and digital art — Indian creativity that has never gone out, only changed form.</p>
+          <div class="film-more">
+            <p class="dnote">“By using AI to create dynamic, seamless transitions, my goal was to craft a modern, cinematic poem.”</p>
+            <p class="frame-label">tools — Midjourney · Google Veo 3</p>
+            <a class="ext" href="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/view" target="_blank" rel="noopener">open on Drive ↗</a>
+          </div>
+          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1hfM-lSn3Qa-ShO99rvCRZNAUoo-uEBfZ/preview" title="Kala Agni" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+
+        <article class="film" id="film-ninth" data-title="The 9th Revolution" data-year="Sept 2025" data-yy="25" data-kind="AI horror short" data-label="horror" data-status="finished" data-img="assets/img/v-ninth.jpg" data-drive="1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5">
+          <img class="film-img" src="assets/img/v-ninth.jpg" alt="The 9th Revolution — a silhouette at a round window under a violet sky" loading="lazy">
+          <h3>The 9th Revolution</h3>
+          <p class="meta">finished — September 2025 — AI horror short</p>
+          <p class="logline">An AI horror short — the first film taken all the way from storyboard to final cut.</p>
+          <div class="film-more">
+            <div class="stillstrip">
+              <img src="assets/img/ninth-1.jpg" alt="The 9th Revolution still — three figures under neon ticket signs" loading="lazy">
+              <img src="assets/img/ninth-3.jpg" alt="The 9th Revolution frame" loading="lazy">
+              <img src="assets/img/ninth-2.jpg" alt="The 9th Revolution frame" loading="lazy">
             </div>
-          </details>
+            <a class="ext" href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener">the storyboard ↗</a>
+            <a class="ext" href="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/view" target="_blank" rel="noopener">open on Drive ↗</a>
+          </div>
+          <details class="watch"><summary>watch the final cut</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1BKxZhjOxXpvugpv-_J0BtyL8o-9sy1C5/preview" title="The 9th Revolution" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
 
-          <details class="exp" id="exp-poet">
-            <summary><span class="exp-date">nov 2025</span> TanRain poet intro <span class="exp-tag">mixed AI + live action</span></summary>
-            <div class="reveal-body">
-              <p class="dnote">The first hybrid: live footage of me, AI everything else. Where the two layers meet
-              is where the interesting problems live.</p>
-              <div class="video-frame">
-                <iframe data-src="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/preview" title="TanRain poet intro — mixed AI and live action" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <a class="ext" href="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/view" target="_blank" rel="noopener">open on Drive ↗</a>
+      </div>
+
+      <a class="next-room" href="#lab" data-open="lab"><small>next room</small>the lab →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════ 03 · THE LAB — EXPERIMENTS ═══════════ -->
+  <section class="panel p-lab" id="lab" aria-label="The lab">
+    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">03 · the lab</span></div>
+    <div class="p-wrap">
+      <p class="kicker"><span class="dot"></span>the lab</p>
+      <h2 class="lab-title">
+        <svg class="stk-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3.1 1.6-1.9 3.1-3.1 5.2-3.1 3.6 0 5.9 3.7 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>
+        Experiments,<br>tool fights<span class="stk" style="--r:8deg">WIP</span><br>&amp; dead ends.<svg class="stk-note" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5a2.5 2.5 0 1 1-2-2.45V5l11-2v12.5a2.5 2.5 0 1 1-2-2.45V7.3L9 8.6z"/></svg>
+      </h2>
+      <div class="lab-row">
+        <button class="reel-btn" type="button" data-film="exp-clips"><span class="play">▶</span> PLAY THE NEWEST REEL</button>
+        <p class="lab-lede">Nothing in this room is finished, and that's the point. This is where the tools get interrogated — what the demo promised, what actually happened.</p>
+      </div>
+
+      <div class="collage">
+
+        <article class="film exp" id="exp-viviana" data-title="Viviana — world building" data-year="Aug 2026" data-yy="26" data-kind="world building · cinematic AI book trailer" data-label="world building" data-img="assets/img/viviana-1.jpg" style="--r:-2deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">world building</span><span class="exp-yy">'26</span>
+          <img class="film-img" src="assets/img/viviana-1.jpg" alt="Viviana — a woman with dark curls in a wingback chair, candlelit study" loading="lazy">
+          <h3>Viviana — world building</h3>
+          <p class="meta">aug 2026 — cinematic AI book trailer frames</p>
+          <p class="logline">Building a world before shooting it: the people, the parlour, the candlelight — locked as frames first.</p>
+          <div class="film-more">
+            <div class="stillstrip">
+              <img src="assets/img/viviana-0.jpg" alt="Viviana — character frame" loading="lazy">
+              <img src="assets/img/viviana-2.jpg" alt="Viviana — the parlour, red velvet sofa and lamps" loading="lazy">
+              <img src="assets/img/viviana-3.jpg" alt="Viviana — the parlour from the door" loading="lazy">
+              <img src="assets/img/viviana-4.jpg" alt="Viviana — a man in a leather jacket on a velvet sofa" loading="lazy">
+              <img src="assets/img/viviana-5.jpg" alt="Viviana — character frame" loading="lazy">
             </div>
-          </details>
+          </div>
+        </article>
 
-          <details class="exp" id="exp-caption">
-            <summary><span class="exp-date">jan 2026</span> Caption video project <span class="exp-tag">mixed AI + live action</span></summary>
-            <div class="reveal-body">
-              <div class="video-frame">
-                <iframe data-src="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/preview" title="Caption video project" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <a class="ext" href="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/view" target="_blank" rel="noopener">open on Drive ↗</a>
-            </div>
-          </details>
+        <article class="film exp" id="exp-clips" data-title="Short film clips — compilation" data-year="Sep 2026" data-yy="26" data-kind="clips compilation" data-label="newest" data-img="assets/img/v-clips.jpg" data-drive="1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv" style="--r:1.8deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">newest</span><span class="exp-yy">'26</span>
+          <img class="film-img" src="assets/img/v-clips.jpg" alt="A wet, empty city street under grey towers and a blank billboard" loading="lazy">
+          <h3>Short film clips — compilation</h3>
+          <p class="meta">sep 2026 — clips compilation</p>
+          <p class="logline">A reel of shots from the newest short-film work.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1qSaNsSGolJw6fimeMy8UQxZ6dq6ql7Zv/preview" title="Short film clips compilation" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
 
-          <details class="exp" id="exp-info">
-            <summary><span class="exp-date">apr 2025</span> AI info video <span class="exp-tag">the first experiment</span></summary>
-            <div class="reveal-body">
-              <p class="dnote">The very first thing I made with these tools. It's here because the beginning
-              belongs in the record too.</p>
-              <div class="video-frame">
-                <iframe data-src="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/preview" title="AI info video — first experiment" allow="autoplay" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <a class="ext" href="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/view" target="_blank" rel="noopener">open on Drive ↗</a>
-            </div>
-          </details>
-        </div>
+        <article class="film exp" id="exp-gozero" data-title="Go Zero — concept ad" data-year="Nov 2025" data-yy="25" data-kind="commercial test" data-label="commercial test" data-img="assets/img/v-gozero.jpg" data-drive="1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1" style="--r:-1.5deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">commercial test</span><span class="exp-yy">'25</span>
+          <img class="film-img" src="assets/img/v-gozero.jpg" alt="Go Zero — commuters in a quiet, sunlit train carriage" loading="lazy">
+          <h3>Go Zero — concept ad</h3>
+          <p class="meta">nov 2025 — Midjourney, Freepik, Higgsfield, Kling, Veo 3.1</p>
+          <p class="logline">Rohan, in his forties, wants to play his old guitar but the whispers of “too late” always win — until the word ZERO on a sugar-free ice-cream tub becomes his permission slip, and his grey world explodes into colour.</p>
+          <div class="film-more">
+            <p class="frame-label">concept &amp; keyframes — Midjourney, Freepik · animation — Higgsfield, Kling, Veo 3.1 · sound — Epidemic Sound</p>
+            <a class="ext" href="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/view" target="_blank" rel="noopener">open on Drive ↗</a>
+          </div>
+          <details class="watch"><summary>watch</summary><div class="video-frame"><iframe data-src="https://drive.google.com/file/d/1KeMzMnjLrU1X-NQjtrIwImbm9RNRchX1/preview" title="Go Zero concept ad" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
 
-        <div class="lab-boards">
-          <h3 class="lab-h">moodboards &amp; storyboards</h3>
-          <p class="lab-sub">the paper trail — every film starts as a wall of references and a stack of frames.</p>
-          <ul class="board-links">
-            <li><a href="https://canva.link/f79h4ubv8shb9db" target="_blank" rel="noopener">Contingency — moodboard + storyboard ↗</a></li>
-            <li><a href="https://canva.link/pro2id65dp9m3k0" target="_blank" rel="noopener">Mishen — series pitch deck ↗</a></li>
-            <li><a href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener">Mishen — moodboard ↗</a></li>
-            <li><a href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener">The 9th Revolution — storyboard ↗</a></li>
-          </ul>
+        <article class="film exp" id="exp-caption" data-title="Birds born in a cage" data-year="Jan 2026" data-yy="26" data-kind="mixed AI + live action" data-label="mixed media" data-img="assets/img/v-caption.jpg" data-drive="162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU" data-aspect="portrait" style="--r:2deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">mixed media</span><span class="exp-yy">'26</span>
+          <img class="film-img" src="assets/img/v-caption.jpg" alt="An engraving of a figure whose head is a birdcage, a black bird inside" loading="lazy">
+          <h3>Birds born in a cage</h3>
+          <p class="meta">jan 2026 — caption video · mixed AI + live action</p>
+          <p class="logline">A vertical caption piece in engraving and paper — words and image sharing the frame.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/162-OvwfYasfFoE2B2W-lnk7m4ecgAwpU/preview" title="Birds born in a cage" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+
+        <article class="film exp" id="exp-poet" data-title="TanRain — poet intro" data-year="Nov 2025" data-yy="25" data-kind="mixed AI + live action" data-label="first hybrid" data-img="assets/img/v-poet.jpg" data-drive="1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5" data-aspect="portrait" style="--r:-2.5deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">first hybrid</span><span class="exp-yy">'25</span>
+          <img class="film-img" src="assets/img/v-poet.jpg" alt="Tanisha looking down at a notebook against a wooden wall" loading="lazy">
+          <h3>TanRain — poet intro</h3>
+          <p class="meta">nov 2025 — mixed AI + live action</p>
+          <p class="logline">Live footage of me, AI everything else. Where the two layers meet is where the interesting problems live.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/1BauPjYGDgs8EE_B-lP-AI4uTJostHsN5/preview" title="TanRain poet intro" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+
+        <article class="film exp" id="exp-info" data-title="AI info video" data-year="Apr 2025" data-yy="25" data-kind="the first experiment" data-label="where it began" data-img="assets/img/v-info.jpg" data-drive="1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP" data-aspect="portrait" style="--r:1.5deg">
+          <span class="tape" aria-hidden="true"></span>
+          <span class="exp-tag">where it began</span><span class="exp-yy">'25</span>
+          <img class="film-img" src="assets/img/v-info.jpg" alt="Hands slicing beetroot and carrots in a warm, sunlit kitchen" loading="lazy">
+          <h3>AI info video</h3>
+          <p class="meta">apr 2025 — the first experiment</p>
+          <p class="logline">The very first thing I made with these tools. It's here because the beginning belongs in the record too.</p>
+          <div class="film-more"><a class="ext" href="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/view" target="_blank" rel="noopener">open on Drive ↗</a></div>
+          <details class="watch"><summary>watch</summary><div class="video-frame portrait"><iframe data-src="https://drive.google.com/file/d/1UcfNYvfi_V3geG6R7QnO9U7kUmrbwlcP/preview" title="AI info video" allow="autoplay; fullscreen"></iframe></div></details>
+        </article>
+      </div>
+
+      <div class="gen-wall">
+        <h3 class="hand-h">the wall of forty generations</h3>
+        <p class="lab-sub">image tests from <em>The 9th Revolution</em> — Seedream 4.0 &amp; Nano Banana, October 2025. The face wouldn't stay the same. These are the versions that almost made it.</p>
+        <div class="polaroids">
+          <figure class="polaroid" style="--r:-4deg"><img src="assets/img/ninth-2.jpg" alt="Generation test — Seedream 4.0" loading="lazy"><figcaption>seedream 4.0 · gen 10</figcaption></figure>
+          <figure class="polaroid" style="--r:3deg"><img src="assets/img/ninth-4.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 14</figcaption></figure>
+          <figure class="polaroid" style="--r:-2deg"><img src="assets/img/ninth-5.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 12</figcaption></figure>
+          <figure class="polaroid" style="--r:4deg"><img src="assets/img/ninth-6.jpg" alt="Generation test — Seedream 4.0" loading="lazy"><figcaption>seedream 4.0 · gen 8</figcaption></figure>
+          <figure class="polaroid" style="--r:-3deg"><img src="assets/img/ninth-3.jpg" alt="Generation test — Nano Banana" loading="lazy"><figcaption>nano banana · gen 23</figcaption></figure>
         </div>
       </div>
 
-    </section>
+      <div class="tickets-wrap">
+        <h3 class="hand-h">the paper trail</h3>
+        <p class="lab-sub">every film starts as a wall of references and a stack of frames.</p>
+        <div class="tickets">
+          <a class="ticket" href="https://canva.link/f79h4ubv8shb9db" target="_blank" rel="noopener"><small>admit one · moodboard + storyboard</small><b>Contingency</b><i>↗</i></a>
+          <a class="ticket" href="https://canva.link/pro2id65dp9m3k0" target="_blank" rel="noopener"><small>admit one · series pitch deck</small><b>Mishen</b><i>↗</i></a>
+          <a class="ticket" href="https://canva.link/tv20ahxuo1cz3rk" target="_blank" rel="noopener"><small>admit one · moodboard</small><b>Mishen</b><i>↗</i></a>
+          <a class="ticket" href="https://canva.link/3vk7v9gql1blkdk" target="_blank" rel="noopener"><small>admit one · storyboard</small><b>The 9th Revolution</b><i>↗</i></a>
+        </div>
+      </div>
 
-    <!-- ============ ROOM · THE LIBRARY ============ -->
-    <section class="room" id="library" data-pos="1,1" aria-label="The library — creative writing">
-      <div class="room-inner">
-        <header class="room-head">
-          <p class="kicker">the library</p>
-          <h2>The writing that started everything</h2>
-          <p class="room-note">Before the films there were poems — about words that won't come out, houses that
-          don't exist, and light that only shows itself to minds that wander. Open a spine to read.</p>
-        </header>
+      <a class="next-room" href="#library" data-open="library"><small>next room</small>the library →</a>
+    </div>
+  </section>
 
-        <div class="shelf">
+  <!-- ═══════════ 04 · THE LIBRARY — WRITING ═══════════ -->
+  <section class="panel p-library" id="library" aria-label="The library">
+    <div class="panel-bar"><button class="back" type="button" data-close>← back to the room</button><span class="panel-tag">04 · the library</span></div>
+    <div class="p-wrap">
+      <p class="kicker"><span class="dot"></span>the library</p>
+      <h2 class="lib-title">The writing that<br><em>started everything.</em></h2>
+      <p class="lib-lede">Before the films there were poems — about words that won't come out, houses that don't exist, and light that only shows itself to minds that wander. Pull a book off the shelf.</p>
+
+      <div class="spines" id="spines"></div>
+
+      <div class="shelves-src">
+<div class="shelf">
           <h3 class="shelf-h">poems</h3>
 
           <details class="poem" id="poem-hiraeth">
@@ -716,56 +738,58 @@
             </div>
           </details>
         </div>
-
-        <p class="library-out">The essays — film, psychology, and the mind — live on
-        <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">Substack ↗</a>,
-        where the film diary of this whole build is written weekly.</p>
       </div>
 
-    </section>
+      <p class="library-out">The essays — film, psychology, and the mind — live on
+      <a href="https://tanishaparhi.substack.com" target="_blank" rel="noopener">Substack ↗</a>, where the film diary of this whole build is written weekly.</p>
 
-  </div>
+      <a class="next-room" href="#about" data-open="about"><small>back round to</small>the window →</a>
+    </div>
+  </section>
+
 </main>
 
-<!-- ===================== DOORS (world mode) ===================== -->
-<nav id="doors" aria-label="Doors to adjacent rooms">
-  <a class="door door-e" data-when="hall"    href="#films"   data-goto="films"><span>the screening room →</span></a>
-  <a class="door door-s" data-when="hall"    href="#lab"     data-goto="lab"><span>↓ the lab</span></a>
-  <a class="door door-w" data-when="films"   href="#hall"    data-goto="hall"><span>← entry hall</span></a>
-  <a class="door door-s" data-when="films"   href="#library" data-goto="library"><span>↓ the library</span></a>
-  <a class="door door-n" data-when="lab"     href="#hall"    data-goto="hall"><span>↑ entry hall</span></a>
-  <a class="door door-e" data-when="lab"     href="#library" data-goto="library"><span>the library →</span></a>
-  <a class="door door-n" data-when="library" href="#films"   data-goto="films"><span>↑ the screening room</span></a>
-  <a class="door door-w" data-when="library" href="#lab"     data-goto="lab"><span>← the lab</span></a>
-</nav>
+<!-- ═══════════════ SCREEN (film modal) ═══════════════ -->
+<div id="screen" class="modal" role="dialog" aria-modal="true" aria-labelledby="screen-title" hidden>
+  <div class="modal-scrim" data-dismiss></div>
+  <div class="modal-box">
+    <button class="modal-x" type="button" data-dismiss aria-label="Close">✕</button>
+    <div class="screen-video"></div>
+    <div class="screen-info">
+      <p class="screen-meta"></p>
+      <h3 id="screen-title"></h3>
+      <p class="screen-log"></p>
+      <div class="screen-more"></div>
+    </div>
+  </div>
+</div>
 
-<!-- ===================== MAP ===================== -->
-<nav id="map" aria-label="House map">
-  <svg viewBox="0 0 96 76" aria-hidden="true">
-    <rect class="mroom" data-goto="hall"    x="4"  y="4"  width="42" height="32" rx="3"/>
-    <rect class="mroom" data-goto="films"   x="50" y="4"  width="42" height="32" rx="3"/>
-    <rect class="mroom" data-goto="lab"     x="4"  y="40" width="42" height="32" rx="3"/>
-    <rect class="mroom" data-goto="library" x="50" y="40" width="42" height="32" rx="3"/>
-    <text x="25" y="23" data-goto="hall">hall</text>
-    <text x="71" y="23" data-goto="films">films</text>
-    <text x="25" y="59" data-goto="lab">lab</text>
-    <text x="71" y="59" data-goto="library">library</text>
-  </svg>
-  <p id="maplabel">you are in <em>the hall</em></p>
-</nav>
+<!-- ═══════════════ READER (poem modal) ═══════════════ -->
+<div id="reader" class="modal" role="dialog" aria-modal="true" aria-labelledby="reader-title" hidden>
+  <div class="modal-scrim" data-dismiss></div>
+  <div class="book">
+    <button class="modal-x" type="button" data-dismiss aria-label="Close">✕</button>
+    <div class="book-page">
+      <p class="book-num"></p>
+      <h3 id="reader-title"></h3>
+      <p class="book-gloss"></p>
+      <div class="book-body"></div>
+    </div>
+    <div class="book-nav"><button type="button" class="book-prev">← previous</button><button type="button" class="book-next">next →</button></div>
+  </div>
+</div>
 
-<div id="lantern" aria-hidden="true"></div>
-
-<!-- Mobile / fallback nav -->
 <nav id="flatnav" aria-label="Sections">
-  <a href="#hall" data-goto="hall">hall</a>
-  <a href="#films" data-goto="films">films</a>
-  <a href="#lab" data-goto="lab">lab</a>
-  <a href="#library" data-goto="library">library</a>
+  <a href="#about" data-open="about">about</a>
+  <a href="#films" data-open="films">films</a>
+  <a href="#lab" data-open="lab">lab</a>
+  <a href="#library" data-open="library">library</a>
 </nav>
 
+<img class="fi-preview" id="fi-preview" alt="" aria-hidden="true">
 <div id="grain" aria-hidden="true"></div>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=7" defer></script>
+<script type="module" src="room.js?v=7"></script>
 </body>
 </html>
