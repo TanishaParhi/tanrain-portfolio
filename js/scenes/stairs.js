@@ -83,7 +83,7 @@ export function create(ctx) {
   const ndc = new THREE.Vector3();
   const look = new THREE.Vector3();
   return {
-    scene, camera, hotspots, pickables, ready: Promise.all(loads),
+    scene, camera, hotspots, pickables, ready: Promise.all(loads.slice(0, 4)),
     hover(id) { hoverId = id; },
     enter() { lastCap = -1; },
     exit() { TR.caption("", ""); },

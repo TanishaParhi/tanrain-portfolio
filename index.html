@@ -7,20 +7,32 @@
 <meta name="description" content="Tanisha Parhi (TanRain) — writer, building films with AI. Dive into the eyes: a room of portals to her films, a magical library of poems, a staircase of posters.">
 <meta property="og:title" content="TanRain — Tanisha Parhi">
 <meta property="og:description" content="Dive into the eyes. A room of portals: films that are worlds, poems that open into skies, a staircase of posters.">
-<meta property="og:image" content="assets/intro/eyes.webp">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tanishaparhi.github.io/tanrain-portfolio/">
+<meta property="og:site_name" content="TanRain">
+<meta property="og:image" content="https://tanishaparhi.github.io/tanrain-portfolio/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta property="og:image:alt" content="A pair of blue eyes under rippling water light, with the name Tanisha Parhi">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://tanishaparhi.github.io/tanrain-portfolio/">
 <meta name="theme-color" content="#02060b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2302060b'/%3E%3Cellipse cx='16' cy='16' rx='11' ry='6.5' fill='none' stroke='%2384D2F6' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2359A5D8'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%2302060b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/intro/eyes.webp" media="(min-aspect-ratio: 1/1)">
 <link rel="preload" as="image" href="assets/intro/eyes-portrait.webp" media="(max-aspect-ratio: 1/1)">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=36">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-  "tr/shaders": "./js/shaders.js?v=30"
+  "tr/shaders": "./js/shaders.js?v=36"
 } }
 </script>
 </head>
@@ -74,7 +86,19 @@
   </div>
 </nav>
 
-<div id="portal" aria-hidden="true"></div>
+<div id="tx" aria-hidden="true">
+  <svg class="tx-defs" width="0" height="0"><filter id="tx-ripple"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+  <div class="tx-portal"></div>
+  <div class="tx-rings"><i></i><i></i><i></i><i></i></div>
+  <div class="tx-leader">
+    <div class="lead-sprockets l"></div><div class="lead-sprockets r"></div>
+    <div class="lead-dial"><div class="lead-sweep"></div><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88"/><circle cx="100" cy="100" r="70"/><path d="M100 0v200M0 100h200"/></svg><span class="lead-num">3</span></div>
+  </div>
+  <div class="tx-page"><div class="tx-sheet"></div></div>
+  <div class="tx-climb"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="tx-iris"></div>
+  <div class="tx-title"><small></small><b></b></div>
+</div>
 
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
   <div class="modal-scrim" data-dismiss></div>
@@ -93,8 +117,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="data.js?v=30"></script>
-<script src="app.js?v=30"></script>
-<script type="module" src="js/main.js?v=30"></script>
+<script src="data.js?v=36"></script>
+<script src="app.js?v=36"></script>
+<script type="module" src="js/main.js?v=36"></script>
 </body>
 </html>

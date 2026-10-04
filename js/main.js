@@ -32,20 +32,32 @@ function boot() {
   renderer.setClearColor(0x02060b, 1);
   canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); TR.fail(); });
 
-  /* ---------- textures ---------- */
+  /* ---------- textures ----------
+     Chrome/Firefox decode images off the main thread (ImageBitmap) so a world can stream
+     its frames in without stutter; Safari keeps the classic loader. */
+  const ua = navigator.userAgent;
+  const useBitmaps = typeof createImageBitmap === "function" && /Chrome|Firefox/.test(ua);
+  const bitmapLoader = useBitmaps ? new THREE.ImageBitmapLoader().setOptions({ imageOrientation: "flipY" }) : null;
   const loader = new THREE.TextureLoader();
   const cache = new Map();
   function tex(url) {
     if (cache.has(url)) return cache.get(url);
+    const done = (t, res) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); };
     const p = new Promise((res) => {
-      loader.load(url, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); }, undefined, () => res(null));
+      if (bitmapLoader) {
+        bitmapLoader.load(url, (bmp) => { const t = new THREE.Texture(bmp); t.flipY = false; t.needsUpdate = true; done(t, res); }, undefined, () => res(null));
+      } else {
+        loader.load(url, (t) => done(t, res), undefined, () => res(null));
+      }
     });
     cache.set(url, p);
     return p;
   }
   const ctx = { THREE, renderer, tex, D, vw, vh, small, TR, aspect: () => vw() / vh() };
 
-  /* ---------- worlds ---------- */
+  /* ---------- worlds ----------
+     Built worlds stay in memory (most recent eight), so going back is instant.
+     prefetch() builds and compiles a world before it is shown — on hover, and in idle time. */
   const MODULES = {
     room: () => import("./scenes/room.js" + V),
     films: () => import("./scenes/hall.js" + V),
@@ -56,35 +68,63 @@ function boot() {
     lab: () => import("./scenes/ambient.js" + V),
     about: () => import("./scenes/ambient.js" + V)
   };
-  const KEEP = new Set(["room", "films", "library"]);
-  const built = new Map();
+  const PINNED = new Set(["room", "films", "library"]);
+  const LIMIT = small ? 6 : 10;
+  const built = new Map();     /* key -> inst, in recency order */
+  const building = new Map();  /* key -> Promise<inst> */
   let current = null, currentKey = null, paused = false;
+  const keyOf = (name, id) => (id ? name + ":" + id : name);
 
-  async function build(name, id) {
-    const key = id ? name + ":" + id : name;
-    if (built.has(key)) return built.get(key);
-    const mod = await MODULES[name]();
-    const inst = mod.create(ctx, { name, id });
-    inst.key = key;
-    if (KEEP.has(key)) built.set(key, inst);
-    await inst.ready;
-    return inst;
+  function touch(key, inst) {
+    built.delete(key); built.set(key, inst);
+    while (built.size > LIMIT) {
+      const oldest = [...built.keys()].find((k) => !PINNED.has(k) && k !== currentKey);
+      if (!oldest) break;
+      const gone = built.get(oldest); built.delete(oldest);
+      if (gone.dispose) gone.dispose();
+    }
+  }
+
+  function build(name, id) {
+    const key = keyOf(name, id);
+    if (built.has(key)) return Promise.resolve(built.get(key));
+    if (building.has(key)) return building.get(key);
+    const p = MODULES[name]().then(async (mod) => {
+      const inst = mod.create(ctx, { name, id });
+      inst.key = key;
+      await inst.ready;
+      try {
+        if (renderer.compileAsync) await renderer.compileAsync(inst.scene, inst.camera);
+        else renderer.compile(inst.scene, inst.camera);
+      } catch (e) { /* compile lazily on first frame instead */ }
+      building.delete(key);
+      touch(key, inst);
+      return inst;
+    }).catch((e) => { building.delete(key); throw e; });
+    building.set(key, p);
+    return p;
+  }
+
+  function prefetch(name, id, soft) {
+    if (!MODULES[name]) return;
+    /* idle (soft) prefetches only fill free slots, so they never evict a world you've visited */
+    if (soft && !built.has(keyOf(name, id)) && built.size + building.size >= LIMIT) return;
+    build(name, id).catch(() => {});
   }
 
   async function show(name, id) {
-    const key = id ? name + ":" + id : name;
+    const key = keyOf(name, id);
     if (key === currentKey && current) return;
     let inst;
     try { inst = await build(name, id); } catch (e) { console.warn("[world]", e); return; }
     const old = current;
     if (old && old !== inst && old.exit) old.exit();
     current = inst; currentKey = key;
+    touch(key, inst);
     smooth = TR.progress();
     resize();
     if (inst.enter) inst.enter();
     buildLabels(inst);
-    renderer.compile(inst.scene, inst.camera);
-    if (old && old !== inst && !KEEP.has(old.key) && old.dispose) old.dispose();
   }
 
   /* ---------- labels pinned to 3D anchors ---------- */
@@ -130,6 +170,7 @@ function boot() {
     if (current && current.hover) current.hover(id);
     labels.forEach((l) => l.el.classList.toggle("hot", l.h.id === id));
     const h = id && current.hotspots.find((x) => x.id === id);
+    if (h && h.route) { const [n, i] = h.route.split("/"); prefetch(n, i); } /* hovering a portal starts building its world */
     TR.cursor && TR.cursor(h ? h.cursor || "enter" : "");
     canvas.style.cursor = id ? "pointer" : "";
     if (id) TR.chime(1);
@@ -199,6 +240,7 @@ function boot() {
 
   window.WORLD = {
     show,
+    prefetch,
     setPaused(p) { paused = p; },
     pullback(sec) { if (current && current.pullback) current.pullback(sec); },
     get current() { return currentKey; },

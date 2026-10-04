@@ -305,11 +305,12 @@ export function create(ctx) {
   }));
 
   /* ---------- textures ---------- */
-  const ready = Promise.all([
-    ...stillUrls.map((u, i) => tex(u).then((t) => { stills[i] = t; })),
-    tex("assets/films/gozero/00.webp").then((t) => { monitor.material.map = t; monitor.material.needsUpdate = true; }),
-    ...polaroidMats.map(([m, u]) => tex(u).then((t) => { m.map = t; m.needsUpdate = true; }))
-  ]).then(() => { screenA.material.map = stills[0]; screenA.material.needsUpdate = true; });
+  tex("assets/films/gozero/00.webp").then((t) => { if (t) { monitor.material.map = t; monitor.material.needsUpdate = true; } });
+  polaroidMats.forEach(([m, u]) => tex(u).then((t) => { if (t) { m.map = t; m.needsUpdate = true; } }));
+  const ready = tex(stillUrls[0]).then((t) => {
+    stills[0] = t; screenA.material.map = t; screenA.material.needsUpdate = true;
+    stillUrls.slice(1).forEach((u, i) => tex(u).then((tt) => { stills[i + 1] = tt; }));
+  });
 
   /* ---------- camera moves ---------- */
   let anim = null;
@@ -376,10 +377,10 @@ export function create(ctx) {
       reels.forEach((r, i) => { r.rotation.x += dt * (i ? 1.6 : 1.2); });
       beamMesh.material.opacity = 0.05 + Math.sin(t * 9) * 0.004;
       screenT += dt;
-      if (!fading && screenT > 4.2 && stills.length) { fading = true; screenT = 0; screenB.material.map = stills[(screenIdx + 1) % stills.length]; screenB.material.needsUpdate = true; }
+      if (!fading && screenT > 4.2 && stills[(screenIdx + 1) % stillUrls.length]) { fading = true; screenT = 0; screenB.material.map = stills[(screenIdx + 1) % stillUrls.length]; screenB.material.needsUpdate = true; }
       if (fading) {
         screenB.material.opacity = Math.min(1, screenB.material.opacity + dt * 0.9);
-        if (screenB.material.opacity >= 1) { screenIdx = (screenIdx + 1) % stills.length; screenA.material.map = stills[screenIdx]; screenA.material.needsUpdate = true; screenB.material.opacity = 0; fading = false; }
+        if (screenB.material.opacity >= 1) { screenIdx = (screenIdx + 1) % stillUrls.length; screenA.material.map = stills[screenIdx]; screenA.material.needsUpdate = true; screenB.material.opacity = 0; fading = false; }
       }
       screenLight.intensity = 2.2 + Math.sin(t * 7) * 0.15;
       globe.rotation.y += dt * 0.4;

@@ -49,7 +49,7 @@ export function create(ctx) {
   let hoverId = null, yaw = 0, diveT = null;
   const camPos = new THREE.Vector3(0, 2.1, 4.5), lookAt = new THREE.Vector3();
   return {
-    scene, camera, hotspots, pickables, ready: Promise.all(loads),
+    scene, camera, hotspots, pickables, ready: Promise.all(loads.slice(0, 4)),
     hover(id) { hoverId = id; },
     dive(id) {
       const s = screens.find((x) => x.id === id);

@@ -60,7 +60,7 @@ export function create(ctx, { id }) {
   }
   const loads = frames.map((fr, i) => tex(`assets/films/${f.id}/${String(i).padStart(2, "0")}.webp`).then((t) => {
     if (!t) return;
-    fr.mat.map = t; fr.mat.color.set(0xffffff); fr.mat.needsUpdate = true;
+    fr.mat.map = t; fr.mat.needsUpdate = true; fr.fadeIn = 0;
     const a = t.image.width / t.image.height;
     if (Math.abs(a - 16 / 9) > 0.05) fr.plane.scale.set(Math.min(1, a / (16 / 9)), Math.min(1, (16 / 9) / a), 1);
   }));
@@ -253,7 +253,7 @@ export function create(ctx, { id }) {
 
   let hoverId = null;
   return {
-    scene, camera, hotspots, pickables, ready: Promise.all(loads),
+    scene, camera, hotspots, pickables, ready: Promise.all(loads.slice(0, 2)),
     hover(id) { hoverId = id; },
     update(dt, t, p, look) {
       camAt(p, look, t);
@@ -263,6 +263,7 @@ export function create(ctx, { id }) {
         const target = hoverId === "frame" + i ? 1 : 0;
         fr.hover += (target - fr.hover) * Math.min(1, dt * 6);
         fr.g.position.y = fr.base.y + Math.sin(t * 0.6 + fr.ph) * 0.06;
+        if (fr.fadeIn !== undefined && fr.fadeIn < 1) { fr.fadeIn = Math.min(1, fr.fadeIn + dt * 2.5); fr.mat.color.setScalar(0.11 + 0.89 * fr.fadeIn); }
         const k = 1 + fr.hover * 0.07; fr.g.scale.set(k, k, k);
       });
       updaters.forEach((u) => u(t, dt));
